@@ -11,12 +11,12 @@
 /*** 
  * Coordinates and details for the mirror sphere
  ***/
-bool mirror_sphere( Vector3, Vector3 );
+bool mirror_sphere( Point3, Vector3 );
 
 /***
  * Coordinates and details for the glass sphere
  ***/
-bool glass_sphere( Vector3, Vector3 );
+bool glass_sphere( Point3, Vector3 );
 
 /*** 
  * Coordinates and details for the floor.
@@ -26,4 +26,4 @@ void floor( void );
 /*** 
  * Position and place everything into model space.
  ***/
-void model_space( Vector3, Vector3 );
+void model_space( Point3, Point3 );

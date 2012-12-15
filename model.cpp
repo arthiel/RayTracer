@@ -7,18 +7,16 @@
 /*** 
  * Coordinates and details for the mirror sphere
  ***/
-bool mirror_sphere( Vector3 origin, Vector3 dir){
+bool mirror_sphere( Point3 origin, Vector3 dir){
 	// Radius : 8
 	// X : 68 , Y : -5 , Z : 140
 	float x = 250-120, y=250-50, z= 210-140, r = 80;
 	dir.normalize();	// Now A = 1.
-	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
 
 	float B = 2 * ( dir.x * ( origin.x - x ) + dir.y * ( origin.y - y ) + dir.z * (origin.z - z ) );
 	float C = (origin.x - x) * (origin.x -x ) + (origin.y - y)*(origin.y - y) + (origin.z - z)*(origin.z - z) - r *r;  
 
 	if( ((B * B)- 4 * C ) >= 0 ){
-		//cout << "Intersect" << endl;
 		glColor3f( 1, 0, 0 );
 		return true;
 	}
@@ -28,19 +26,16 @@ bool mirror_sphere( Vector3 origin, Vector3 dir){
 /***
  * Coordinates and details for the glass sphere
  ***/
-bool glass_sphere( Vector3 origin, Vector3 dir ){
+bool glass_sphere( Point3 origin, Vector3 dir ){
 	// Raidus 8
 	// X : 80 , Y : .7 , Z : 155
 	float x = 250, y = 250+7, z = 210-155-80, r = 80;	 // x, y center point.
-	//float x = 20, y = 20, z = 20, r=4;
 	dir.normalize();	// Now A = 1.
-	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
 
 	float B = 2 * ( dir.x * ( origin.x - x ) + dir.y * ( origin.y - y ) + dir.z * (origin.z - z ) );
 	float C = (origin.x - x) * (origin.x -x ) + (origin.y - y)*(origin.y - y) + (origin.z - z)*(origin.z - z) - r *r;  
 
 	if( ((B * B)- 4 * C ) >= 0 ){
-		//cout << "Intersect" << endl;
 		glColor3f( 0, 1, 0 );
 		return true;
 	}
@@ -59,13 +54,13 @@ void floor( void ){
 /*** 
  * Position and place everything into model space.
  ***/
-void model_space( Vector3 origin, Vector3 distance ){
+void model_space( Point3 origin, Point3 distance ){
 	//glass_sphere();
-	distance = distance - origin;
-	if( glass_sphere( origin, distance )){
+	Vector3 dir = distance - origin;
+	if( glass_sphere( origin, dir )){
 		return;//glColor3f( 0, 1, 0 );
 	}
-	else if( mirror_sphere( origin, distance) ){
+	else if( mirror_sphere( origin, dir) ){
 		return;//glColor3f( 1, 0, 0 );
 	}
 
