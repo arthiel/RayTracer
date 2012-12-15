@@ -1,17 +1,29 @@
 // model.cpp - The coordinates and model-space of the scene
 // 
-
+#include "stdafx.h"
 #include "model.h"
-#include "..\vecmath.h"
+
 
 /*** 
  * Coordinates and details for the mirror sphere
  ***/
-GLfloat* mirror_sphere( Vector3 origin, Vector3 distance){
+bool mirror_sphere( Vector3 origin, Vector3 dir){
 	// Radius : 8
 	// X : 68 , Y : -5 , Z : 140
-	int x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
+	float x = 180, y = 200, z = 120, r = 10;	 // x, y center point.
+	//float x = 20, y = 20, z = 20, r=4;
+	dir.normalize();	// Now A = 1.
+	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
 
+	float B = 2 * ( dir.x * ( origin.x - x ) + dir.y * ( origin.y - y ) + dir.z * (origin.z - z ) );
+	float C = (dir.x - x) * (dir.x -x ) + (dir.y - y)*(dir.y - y) + (dir.z - z)*(dir.z - z) - r *r;  
+
+	if( ((B * B)- 4 * C ) >= 0 ){
+		//cout << "Intersect" << endl;
+		glColor3f( 1, 0, 0 );
+		return true;
+	}
+	return false;
 }
 
 /***
@@ -35,8 +47,15 @@ void floor( void ){
 /*** 
  * Position and place everything into model space.
  ***/
-void model_space( void ){
-	glass_sphere();
-	mirror_sphere();
-	floor();
+void model_space( Vector3 origin, Vector3 distance ){
+	//glass_sphere();
+	distance = distance - origin;
+	if( mirror_sphere( origin, distance) ){
+		glColor3f( 1, 0, 0 );
+	}
+	else {
+		glColor3f( 0, 0, 0 );
+	}
+
+	//floor();
 }

@@ -5,11 +5,13 @@
 #include <cstdlib>
 #include <vector>
 #include <gl/glut.h>
+#include "..\vecmath.h"
+#include "math.h"
 
 /*** 
  * Coordinates and details for the mirror sphere
  ***/
-GLfloat* mirror_sphere( float x, float y, float z );
+bool mirror_sphere( Vector3, Vector3 );
 
 /***
  * Coordinates and details for the glass sphere
@@ -24,4 +26,4 @@ void floor( void );
 /*** 
  * Position and place everything into model space.
  ***/
-void model_space( void );
+void model_space( Vector3, Vector3 );
