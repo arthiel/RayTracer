@@ -10,13 +10,12 @@
 bool mirror_sphere( Vector3 origin, Vector3 dir){
 	// Radius : 8
 	// X : 68 , Y : -5 , Z : 140
-	float x = 180, y = 200, z = 120, r = 10;	 // x, y center point.
-	//float x = 20, y = 20, z = 20, r=4;
+	float x = 250-68, y=250-50, z= 210-140, r = 80;
 	dir.normalize();	// Now A = 1.
 	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
 
 	float B = 2 * ( dir.x * ( origin.x - x ) + dir.y * ( origin.y - y ) + dir.z * (origin.z - z ) );
-	float C = (dir.x - x) * (dir.x -x ) + (dir.y - y)*(dir.y - y) + (dir.z - z)*(dir.z - z) - r *r;  
+	float C = (origin.x - x) * (origin.x -x ) + (origin.y - y)*(origin.y - y) + (origin.z - z)*(origin.z - z) - r *r;  
 
 	if( ((B * B)- 4 * C ) >= 0 ){
 		//cout << "Intersect" << endl;
@@ -29,10 +28,23 @@ bool mirror_sphere( Vector3 origin, Vector3 dir){
 /***
  * Coordinates and details for the glass sphere
  ***/
-void glass_sphere( void ){
+bool glass_sphere( Vector3 origin, Vector3 dir ){
 	// Raidus 8
 	// X : 80 , Y : .7 , Z : 155
+	float x = 250, y = 250-.7, z = 210-155, r = 80;	 // x, y center point.
+	//float x = 20, y = 20, z = 20, r=4;
+	dir.normalize();	// Now A = 1.
+	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
 
+	float B = 2 * ( dir.x * ( origin.x - x ) + dir.y * ( origin.y - y ) + dir.z * (origin.z - z ) );
+	float C = (origin.x - x) * (origin.x -x ) + (origin.y - y)*(origin.y - y) + (origin.z - z)*(origin.z - z) - r *r;  
+
+	if( ((B * B)- 4 * C ) >= 0 ){
+		//cout << "Intersect" << endl;
+		glColor3f( 0, 1, 0 );
+		return true;
+	}
+	return false;
 }
 
 /*** 
@@ -50,9 +62,13 @@ void floor( void ){
 void model_space( Vector3 origin, Vector3 distance ){
 	//glass_sphere();
 	distance = distance - origin;
-	if( mirror_sphere( origin, distance) ){
-		glColor3f( 1, 0, 0 );
+	if( glass_sphere( origin, distance )){
+		return;//glColor3f( 0, 1, 0 );
 	}
+	else if( mirror_sphere( origin, distance) ){
+		return;//glColor3f( 1, 0, 0 );
+	}
+
 	else {
 		glColor3f( 0, 0, 0 );
 	}

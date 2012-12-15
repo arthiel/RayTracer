@@ -16,7 +16,7 @@ bool mirror_sphere( Vector3, Vector3 );
 /***
  * Coordinates and details for the glass sphere
  ***/
-void glass_sphere( void );
+bool glass_sphere( Vector3, Vector3 );
 
 /*** 
  * Coordinates and details for the floor.
