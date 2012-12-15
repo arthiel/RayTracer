@@ -10,7 +10,7 @@
 bool mirror_sphere( Vector3 origin, Vector3 dir){
 	// Radius : 8
 	// X : 68 , Y : -5 , Z : 140
-	float x = 250-68, y=250-50, z= 210-140, r = 80;
+	float x = 250-120, y=250-50, z= 210-140, r = 80;
 	dir.normalize();	// Now A = 1.
 	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
 
@@ -31,7 +31,7 @@ bool mirror_sphere( Vector3 origin, Vector3 dir){
 bool glass_sphere( Vector3 origin, Vector3 dir ){
 	// Raidus 8
 	// X : 80 , Y : .7 , Z : 155
-	float x = 250, y = 250-.7, z = 210-155, r = 80;	 // x, y center point.
+	float x = 250, y = 250+7, z = 210-155-80, r = 80;	 // x, y center point.
 	//float x = 20, y = 20, z = 20, r=4;
 	dir.normalize();	// Now A = 1.
 	//float x = 68, y = -5, z = 140, r = 8;	 // x, y center point.
