@@ -11,7 +11,7 @@
 /*** 
  * Coordinates and details for the floor.
  ***/
-void floor( void );
+bool floor( Point3, Vector3 );
 
 /*** 
  * Position and place everything into model space.
