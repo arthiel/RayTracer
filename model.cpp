@@ -1,9 +1,9 @@
 // model.cpp - The coordinates and model-space of the scene
 // 
+
+
 #include "stdafx.h"
 #include "model.h"
-#include "Sphere.h"
-
 
 /*** 
  * Coordinates and details for the floor.
@@ -14,7 +14,7 @@ bool floor( Point3 origin, Vector3 dir ){
 	// Z1 : -100 , Z2 : 200
 
 	//Vector3 F( (250), (250-20),0);
-	Vector3 F ( 0, 80, -550 );
+	Vector3 F ( 0, 80, origin.z );
 	//Vector3 floor( 90, 0, 300 );
 	//Vector3 floor( (99/2000), -1, (1/100));	// Calculated using 3 equations and solving the system.
 	Vector3 floor( 1/70, -1, 1/200 );
@@ -39,18 +39,26 @@ bool floor( Point3 origin, Vector3 dir ){
 void model_space( Point3 origin, Point3 distance ){
 	//glass_sphere();
 	Vector3 dir = distance - origin;
-
+	Light ambient( .8, .8, 0, .2 );
 	// Define world objects.
 	Sphere glass( 0, .7, -235, 8 );
+	glass.setColors( 0, 1, 0 );
+	
 	Sphere mirror( -120, -5, -140, 8 );
+	mirror.setColors( 1, 0, 0 );
+
+	glass.setLighting( ambient, Light(), Light(), 4);
+	mirror.setLighting(ambient, Light(), Light(), 4 );
 	
 	// Check if intersects glass, mirror, etc.
 	if( glass.intersect( origin, dir ) ){ 
-		glColor3f( 0, 1, 0 );
+		glass.phong_ambientlight();
+		glColor3f( glass._red, glass._green, glass._blue );
 		return;
 	}
 	else if( mirror.intersect(origin, dir )){ 
-		glColor3f( 1, 0, 0 );
+		mirror.phong_ambientlight();
+		glColor3f( mirror._red, mirror._green, mirror._blue );
 		return;
 	}
 	else if( floor(origin, dir ) ){
