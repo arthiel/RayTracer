@@ -40,6 +40,8 @@ void model_space( Point3 origin, Point3 distance ){
 	//glass_sphere();
 	Vector3 dir = distance - origin;
 	Light ambient( .8, .8, 0, .2 );
+	Light diffuse( .4, .1, .8, .5, Point3( 400, 400, 400) );
+	
 	// Define world objects.
 	Sphere glass( 0, .7, -235, 8 );
 	glass.setColors( 0, 1, 0 );
@@ -47,17 +49,24 @@ void model_space( Point3 origin, Point3 distance ){
 	Sphere mirror( -120, -5, -140, 8 );
 	mirror.setColors( 1, 0, 0 );
 
-	glass.setLighting( ambient, Light(), Light(), 4);
-	mirror.setLighting(ambient, Light(), Light(), 4 );
+	glass.setLighting( ambient, diffuse, Light(), 4);
+	mirror.setLighting(ambient, diffuse, Light(), 4 );
 	
 	// Check if intersects glass, mirror, etc.
 	if( glass.intersect( origin, dir ) ){ 
 		glass.phong_ambientlight();
+		glass.phong_diffuselight();
 		glColor3f( glass._red, glass._green, glass._blue );
 		return;
 	}
 	else if( mirror.intersect(origin, dir )){ 
+		Point3 orig( mirror._x, mirror._y, mirror._z );
 		mirror.phong_ambientlight();
+
+		// Check if mirror intersects with glass before hitting the light source.
+		if( !glass.intersect( orig, (diffuse._position - orig ))){
+			mirror.phong_diffuselight();
+		}
 		glColor3f( mirror._red, mirror._green, mirror._blue );
 		return;
 	}

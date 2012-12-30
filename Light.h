@@ -7,6 +7,7 @@
 #define LIGHT_H
 
 #include "stdafx.h"
+#include "../vecmath.h"
 
 using namespace std;
 
@@ -17,9 +18,11 @@ class Light {
 	float _green;
 	float _blue;
 	float _ammount;
+	Point3 _position;
 
 	Light();
 	// Constructor for defaults ( No light functions )
 	Light( float, float, float, float);
+	Light( float, float, float, float, Point3 );
 };
 #endif

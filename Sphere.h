@@ -37,5 +37,7 @@ class Sphere {
 
 	bool intersect( Point3, Vector3 );
 	void phong_ambientlight();
+	void phong_diffuselight();
+	void phong_speclight();
 };
 #endif

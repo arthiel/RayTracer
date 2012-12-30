@@ -14,3 +14,11 @@ Light::Light( float red, float green, float blue, float ammount ){
 	_blue = blue;
 	_ammount = ammount;
 }
+
+Light::Light( float red, float green, float blue, float ammount, Point3 pos ){
+	_red = red;
+	_green = green;
+	_blue = blue;
+	_ammount = ammount;
+	_position = pos;
+}

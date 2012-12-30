@@ -7,6 +7,8 @@
 #include "stdafx.h"
 #include "Sphere.h"
 
+	Point3 pt_intersect;
+
 	/***
 	 * Constructor for Sphere
 	 * x, y, z : coordinates
@@ -60,8 +62,13 @@
 		float B = 2 * ( dir.x * ( origin.x - _x ) + dir.y * ( origin.y - _y ) + dir.z * (origin.z - _z ) );
 		float C = (origin.x - _x) * (origin.x - _x ) + (origin.y - _y)*(origin.y - _y) + (origin.z - _z)*(origin.z - _z) - _r *_r;  
 
-		if( ((B * B)- 4 * C ) >= 0 ){
+		float w = (B * B)- 4 * C;
+
+		if( w >= 0 ){
 			glColor3f( 1, 0, 0 );
+
+			pt_intersect = Point3( origin.x + dir.x * w, origin.y + dir.y * w, origin.z + dir.z * w );
+
 			return true;
 		}
 		return false;
@@ -72,3 +79,21 @@
 		_green = l_ambient._ammount * (_green * l_ambient._green);
 		_blue = l_ambient._ammount * (_blue * l_ambient._blue);
 	}
+
+	void Sphere::phong_diffuselight(){
+		Vector3 norm = pt_intersect - Point3( _x, _y, _z );
+		norm.normalize();
+		Vector3 light = l_diffuse._position - Point3( _x, _y, _z );
+		light.normalize();
+
+		_red += l_diffuse._ammount * l_diffuse._red * ( light * norm);
+		_green += l_diffuse._ammount * l_diffuse._green * ( light * norm);
+		_blue += l_diffuse._ammount * l_diffuse._blue * ( light * norm);
+	}
+
+	/*void Sphere::phong_speclight(){
+		
+		_red += l_specular._ammount * pow(( pt_intersect ),l_exponent);
+		_green += l_specular._ammount * pow(( pt_intersect ), l_exponent);
+		_blue += l_specular._ammount * pow(( pt_intersect), l_exponent);
+	}*/
