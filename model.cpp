@@ -40,7 +40,8 @@ void model_space( Point3 origin, Point3 distance ){
 	//glass_sphere();
 	Vector3 dir = distance - origin;
 	Light ambient( .8, .8, 0, .2 );
-	Light diffuse( .4, .1, .8, .5, Point3( 400, 400, 400) );
+	//Light ambient( 0, 0, 0, .2 );
+	Light diffuse( 1, 1, 1, .3, Point3( 500, 350, 150) );
 	
 	// Define world objects.
 	Sphere glass( 0, .7, -235, 8 );
