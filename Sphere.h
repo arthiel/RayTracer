@@ -26,6 +26,8 @@ class Sphere {
 	float _red;
 	float _green;
 	float _blue;
+		float l_red, l_blue, l_green;
+
 
 	// Constructor for defaults ( No light functions )
 	Sphere( float, float, float, float);

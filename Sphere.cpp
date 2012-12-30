@@ -93,9 +93,9 @@
 	 * Based on the Phong model
 	 ***/
 	void Sphere::phong_ambientlight(){
-		_red = l_ambient._ammount * (_red * l_ambient._red);
-		_green = l_ambient._ammount * (_green * l_ambient._green);
-		_blue = l_ambient._ammount * (_blue * l_ambient._blue);
+		l_red = l_ambient._ammount * (_red * l_ambient._red);
+		l_green = l_ambient._ammount * (_green * l_ambient._green);
+		l_blue = l_ambient._ammount * (_blue * l_ambient._blue);
 	}
 	
 	/*** 
@@ -112,14 +112,29 @@
 		light.normalize();
 
 		// Add the diffuse lighting to the ambient lighting.
-		_red += l_diffuse._ammount * l_diffuse._red * ( light * norm);
-		_green += l_diffuse._ammount * l_diffuse._green * ( light * norm);
-		_blue += l_diffuse._ammount * l_diffuse._blue * ( light * norm);
+		l_red += l_diffuse._ammount * (l_diffuse._red * _red ) * ( light * norm);
+		l_green += l_diffuse._ammount * (l_diffuse._green * _green ) * ( light * norm);
+		l_blue += l_diffuse._ammount * (l_diffuse._blue * _blue ) * ( light * norm);
 	}
 
-	/*void Sphere::phong_speclight(){
-		
-		_red += l_specular._ammount * pow(( pt_intersect ),l_exponent);
-		_green += l_specular._ammount * pow(( pt_intersect ), l_exponent);
-		_blue += l_specular._ammount * pow(( pt_intersect), l_exponent);
-	}*/
+	void Sphere::phong_speclight(){
+		// Calculate the point's normal.
+		Vector3 norm = pt_intersect - Point3( _x, _y, _z );
+		norm.normalize();
+
+		// Calculate the light direction
+		Vector3 light = l_specular._position - pt_intersect;
+		light.normalize();
+		// Calculate direction of light reflection.
+		Vector3 reflect = 2 * ( ( light * norm ) / ( norm * norm ) ) * norm - light;
+		reflect.normalize();
+
+		// Change from these numbers later, taken from RayTracer Origin
+		Point3 origin( 250, 250, 550 );
+		Vector3 org = pt_intersect - origin;
+		org.normalize();
+
+		l_red += l_specular._ammount * (l_specular._red * _red) * pow(( reflect * org ),l_exponent);
+		l_green += l_specular._ammount * (l_specular._green * _green) *  pow(( reflect * org ), l_exponent);
+		l_blue += l_specular._ammount * (l_specular._blue * _blue) * pow(( reflect * org), l_exponent);
+	}
