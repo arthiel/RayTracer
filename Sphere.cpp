@@ -126,12 +126,12 @@
 		Vector3 light = l_specular._position - pt_intersect;
 		light.normalize();
 		// Calculate direction of light reflection.
-		Vector3 reflect = 2 * ( ( light * norm ) / ( norm * norm ) ) * norm - light;
+		Vector3 reflect = light - 2 * ( ( light * norm ) / ( norm * norm ) ) * norm;
 		reflect.normalize();
 
 		// Change from these numbers later, taken from RayTracer Origin
 		Point3 origin( 250, 250, 550 );
-		Vector3 org = pt_intersect - origin;
+		Vector3 org = origin - pt_intersect;
 		org.normalize();
 
 		l_red += l_specular._ammount * (l_specular._red * _red) * pow(( reflect * org ),l_exponent);
