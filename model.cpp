@@ -6,81 +6,59 @@
 #include "model.h"
 
 /*** 
- * Coordinates and details for the floor.
- ***/
-bool floor( Point3 origin, Vector3 dir ){
-	// X1 : 10 , X2: 100
-	// Y1 : -20 , Y2: -20
-	// Z1 : -100 , Z2 : 200
+* Position and place everything into model space.
+***/
+void model_space( Point3 origin, Point3 pixelPos ){
+    //glass_sphere();
+    Vector3 dir = pixelPos - origin;
+    Light ambient( .1, .1, 1, .2 );
+    //Light ambient( 0, 0, 0, 0 );
+   // Light diffuse( 1, 1, 1, 1, Point3( 500, 350, 140) );
+    Light diffuse( .5, .5, .5, 1, Point3( 600, 350, 150 ) );
+    // Formerly z = -20
+    Light specular( 1, 1, 1, 1, Point3( 600, 350, 150 ));
 
-	//Vector3 F( (250), (250-20),0);
-	Vector3 F ( 0, 80, origin.z );
-	//Vector3 floor( 90, 0, 300 );
-	//Vector3 floor( (99/2000), -1, (1/100));	// Calculated using 3 equations and solving the system.
-	Vector3 floor( 1/70, -1, 1/200 );
-	//Vector3 floor( (29/70), 1, (1/700));
-	floor.normalize();
+    // Define world objects.
+    // z formerly -235
 
-	float w = -( floor.x * origin.x + floor.y * origin.y + floor.z + origin.z + F.length() ) / (floor.x * dir.x + floor.y * dir.y + floor.z * dir.z );
-	//float w = (floor * origin + F ) / (floor * dir );
-	if( w > 0 ){
-		Point3 poi( origin.x + dir.x * w , origin.y + dir.y * w, origin.z + dir.z * w );
-		if( poi.x > 500 || poi.x < -450 )
-			return false;
-		else if( poi.z > -20 && poi.z < 2000 )
-			return true;
-	}
-	return false;
-}
+    Sphere glass( 260, 230, 80, 80 );
+    glass.setColors( 0, 1, 0 );
 
-/*** 
- * Position and place everything into model space.
- ***/
-void model_space( Point3 origin, Point3 distance ){
-	//glass_sphere();
-	Vector3 dir = distance - origin;
-	Light ambient( .1, .1, 1, .2 );
-	//Light ambient( 0, 0, 0, .2 );
-	Light diffuse( .3, .3, .3, .3, Point3( 500, 350, 150) );
-	Light specular( 1, 1, 1, .5, Point3( 350, 350, -100 ));
-	
-	// Define world objects.
-	// z formerly -235
-	Sphere glass( 0, .7, -200, 8 );
-	glass.setColors( 0, 1, 0 );
-	
-	Sphere mirror( -120, -5, -140, 8 );
-	mirror.setColors( 1, 0, 0 );
+    Sphere mirror( 160, 180, 170, 80 );
+    mirror.setColors( 1, 0, 0 );
 
-	glass.setLighting( ambient, diffuse, specular, 550);
-	mirror.setLighting(ambient, diffuse, specular, 350 );
-	
-	// Check if intersects glass, mirror, etc.
-	if( glass.intersect( origin, dir ) ){ 
-		glass.phong_ambientlight();
-		glass.phong_diffuselight();
-		glass.phong_speclight();
-		glColor3f( glass.l_red, glass.l_green, glass.l_blue );
-		return;
-	}
-	else if( mirror.intersect(origin, dir )){ 
-		Point3 orig( mirror._x, mirror._y, mirror._z );
-		mirror.phong_ambientlight();
+    glass.setLighting( ambient, diffuse, specular, 5550);
+    mirror.setLighting(ambient, diffuse, specular, 350 );
 
-		// Check if mirror intersects with glass before hitting the light source.
-		if( !glass.intersect( orig, (diffuse._position - orig ))){
-			mirror.phong_diffuselight();
-			mirror.phong_speclight();
-		}
-		glColor3f( mirror.l_red, mirror.l_green, mirror.l_blue );
-		return;
-	}
-	else if( floor(origin, dir ) ){
-		glColor3f( 0, 0, 1 );
-	}
-	else {
-		glColor3f( 0, 0, 0 );
-	}
+    Floor thisFloor = Floor();
+    thisFloor.setColors( 0, 0, 1 );
 
-	//floor();
+    // Check if intersects glass, mirror, etc.
+    if( glass.intersect( origin, dir ) ){ 
+        glass.phong_ambientlight();
+        glass.phong_diffuselight();
+        glass.phong_speclight();
+        glColor3f( glass.l_red, glass.l_green, glass.l_blue );
+        return;
+    }
+    else if( mirror.intersect(origin, dir )){ 
+        Point3 orig( mirror._x, mirror._y, mirror._z );
+        mirror.phong_ambientlight();
+
+        // Check if mirror intersects with glass before hitting the light source.
+        if( !glass.intersect( orig, (diffuse._position - orig ))){
+            mirror.phong_diffuselight();
+            mirror.phong_speclight();
+        }
+        glColor3f( mirror.l_red, mirror.l_green, mirror.l_blue );
+        return;
+    }
+    else if( thisFloor.intersection(origin, dir ) ){
+        glColor3f( 0, 0, 1 );
+    }
+    else {
+        glColor3f( 0, 0, 0 );
+    }
+
+    //floor();
 }

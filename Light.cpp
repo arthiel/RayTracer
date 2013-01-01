@@ -5,7 +5,7 @@ Light::Light(){
 	_red = 0;
 	_green = 0;
 	_blue = 0;
-	_ammount = 0;
+	_ammount = 1;
 }
 
 Light::Light( float red, float green, float blue, float ammount ){

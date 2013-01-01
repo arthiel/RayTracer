@@ -5,18 +5,12 @@
 
 #include "stdafx.h"
 #include <cstdlib>
-#include <vector>
 #include <gl/glut.h>
 #include "..\vecmath.h"
 #include "math.h"
 #include "Light.h"
 #include "Sphere.h"
-
-
-/*** 
- * Coordinates and details for the floor.
- ***/
-bool floor( Point3, Vector3 );
+#include "Floor.h"
 
 /*** 
  * Position and place everything into model space.

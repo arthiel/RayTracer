@@ -16,10 +16,10 @@
 	 ***/
 	Sphere::Sphere( float x, float y, float z, float r ){
 		// Convert previous coordinate sets to this coordinate space.
-		_x = 250 + x;
-		_y = 250 + y*10;
-		_z = 210 + z;
-		_r = r * 10;
+		_x = x;
+		_y =y;
+		_z = z;
+		_r = r ;
 	}
 	
 	/***
@@ -30,10 +30,10 @@
 	 ***/
 	Sphere::Sphere( float x, float y, float z, float r, Light ambient, Light diffuse, Light specular, float exponent){
 		// Convert previous coordinate sets to this coordinate space.
-		_x = 250 + x;
-		_y = 250 + y*10;
-		_z = 210 + z;
-		_r = r * 10;
+		_x = x;
+		_y = y;
+		_z =z;
+		_r = r;
 
 		// Light Values
 		l_ambient = ambient;
@@ -78,7 +78,6 @@
 
 		// If the point intersects the sphere.
 		if( w >= 0 ){
-			glColor3f( 1, 0, 0 );
 
 			// Store the point of intersection for later use.
 			pt_intersect = Point3( origin.x + dir.x * w, origin.y + dir.y * w, origin.z + dir.z * w );
@@ -134,6 +133,7 @@
 		Vector3 org = origin - pt_intersect;
 		org.normalize();
 
+		// Add specular lighting to the ambient and diffuse.
 		l_red += l_specular._ammount * (l_specular._red * _red) * pow(( reflect * org ),l_exponent);
 		l_green += l_specular._ammount * (l_specular._green * _green) *  pow(( reflect * org ), l_exponent);
 		l_blue += l_specular._ammount * (l_specular._blue * _blue) * pow(( reflect * org), l_exponent);
