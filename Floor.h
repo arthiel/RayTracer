@@ -7,6 +7,7 @@
 #define FLOOR_H
 
 #include "../vecmath.h"
+#include "Point.h"
 
 class Floor{
 public:
@@ -15,7 +16,7 @@ public:
     // Material colors
     float red, green, blue;
     // Post-Light colors
-    float l_red, l_green, l_blue;
+    float l_red, l_green, l_blue, l_exponent;
 
     // Constructors
     Floor();
@@ -23,8 +24,10 @@ public:
     
     // Set the colors
     void setColors( float red, float green, float blue );
+    void setLightExponent( float exp );
+
     // Calculate intersection
-    bool intersection( Point3 origin, Vector3 dir );
+    Point intersect( Point3 origin, Vector3 dir );
 
 };
 #endif

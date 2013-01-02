@@ -11,6 +11,7 @@
 #include "../vecmath.h"
 #include "gl/glut.h"
 #include "Light.h"
+#include "Point.h"
 using namespace std;
 
 class Sphere {
@@ -36,10 +37,12 @@ class Sphere {
 	
 	void setLighting( Light ambient, Light diffuse, Light specular, float exponent );
 	void setColors( float red, float green, float blue );
+   void setLightExponent( float exp );
 
-	bool intersect( Point3, Vector3 );
-	void phong_ambientlight();
-	void phong_diffuselight();
-	void phong_speclight();
+
+	Point intersect( Point3, Vector3 );
+	//void phong_ambientlight();
+	//void phong_diffuselight();
+	//void phong_speclight();
 };
 #endif

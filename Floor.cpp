@@ -20,13 +20,17 @@ Floor::Floor( Point3 front1, Point3 front2, Point3 back1, Point3 back2 ){
     back2 = back2;
 }
 
-void Floor::setColors( float red, float green, float blue ){
-    red = red;
-    green = green;
-    blue = blue;
+void Floor::setColors( float r, float g, float b ){
+    red = r;
+    green = g;
+    blue = b;
 }
 
-bool Floor::intersection( Point3 origin, Vector3 dir ){
+void Floor::setLightExponent( float exp ){
+    l_exponent = exp;
+}
+
+Point Floor::intersect( Point3 origin, Vector3 dir ){
     Vector3 F ( 0, 80, origin.z );
 
     Vector3 floor( 1/70, -1, 1/200 );
@@ -39,9 +43,9 @@ bool Floor::intersection( Point3 origin, Vector3 dir ){
         // Checks if plane is in bounds of the floor.
         // Floor changes on X and Z values.
         if( poi.x > 500 || poi.x < -450 )
-            return false;
+            return Point();
         else if( poi.z > -20 && poi.z < 2000 )
-            return true;
+            return Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent);
     }
-    return false;
+    return Point();
 }
