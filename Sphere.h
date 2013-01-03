@@ -24,6 +24,11 @@ class Sphere {
 	Light l_specular;
 	float l_exponent;
 
+    // Material settings for light sources.
+    float m_ambient;
+    float m_diffuse;
+    float m_specular;
+
 	float _red;
 	float _green;
 	float _blue;
@@ -41,6 +46,9 @@ class Sphere {
 
 
 	Point intersect( Point3, Vector3 );
+    Point backIntersect(Point3 origin, Vector3 dir );
+    Point frontIntersect(Point3 origin, Vector3 dir );
+
 	//void phong_ambientlight();
 	//void phong_diffuselight();
 	//void phong_speclight();
