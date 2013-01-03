@@ -62,22 +62,25 @@ Point phong_speclight(Point dot, Light spec, float exponent){
 void model_space( Point3 origin, Point3 pixelPos ){
     //glass_sphere();
     Vector3 dir = pixelPos - origin;
-    //Light ambient( 1, 1, 1, .2 );
-    Light ambient( 0, 0, 0, 1 );
+    Light ambient( 1, 1, 1, .2 );
+   // Light ambient( 0, 0, 0, 1 );
     //Light diffuse( 1, 1, 1, 1, Point3( 600, 350, 550) );
-    Light diffuse( 1, 1, 1, .6, Point3( 600, 450, -550 ) );
+    Light diffuse( 0, .3, .3, .6, Point3( 600, 450, -550 ) );
     // Formerly z = -20
     //Light specular( 0, 0, 0, 1, Point3( 600, 350, -150 ));
     Light specular( 1, 1, 1, 1, Point3( 600, 450, -550 ));
     // Define world objects.
     // z formerly -235
 
+    Light spec2( 0, .4, .4, 1, Point3( 100, 150, -140 ));
+    Light diff2( .4, .4, 0, 1, Point3( 100, 140, -140 ));
+
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( 0, 1, 0 );
+    glass.setColors( 1, 1, 1 );
     glass.setLightExponent( 150 );
 
     Sphere mirror( 160, 180, 170, 80 );
-    mirror.setColors( 1, 0, 0 );
+    mirror.setColors( 1, 1, 1 );
     mirror.setLightExponent( 50 );
 
     Floor thisFloor = Floor();
@@ -103,9 +106,17 @@ void model_space( Point3 origin, Point3 pixelPos ){
                  Point interGlass = glass.intersect( pixel.point, (pixel.point - diffuse._position));
                  Point interMirror = mirror.intersect( pixel.point, (pixel.point - diffuse._position) );
                  if( !interGlass.active && !interMirror.active ){
-                     pixel = phong_diffuselight(pixel, diffuse);
-                     pixel = phong_speclight(pixel, specular, pixel.l_exponent);
+                     pixel = phong_diffuselight(pixel, diff2 );
+                     pixel = phong_speclight(pixel, specular, pixel.l_exponent );
+
                  }
+               /*  interGlass = glass.intersect( pixel.point, (pixel.point - diff2._position));
+                 interMirror = mirror.intersect( pixel.point, (pixel.point - diff2._position) );
+                 if( !interGlass.active && !interMirror.active ){
+                     pixel = phong_diffuselight(pixel, diff2 );
+                     pixel = phong_speclight(pixel, spec2, pixel.l_exponent );
+
+                 }*/
             }
         }
         else {
@@ -115,12 +126,21 @@ void model_space( Point3 origin, Point3 pixelPos ){
                  pixel = phong_diffuselight(pixel, diffuse);
                  pixel = phong_speclight(pixel, specular, pixel.l_exponent);
              }
+             /*interGlass = glass.intersect( pixel.point, (pixel.point - diff2._position));
+             if( !interGlass.active ){
+                 pixel = phong_diffuselight(pixel, diff2 );
+                 pixel = phong_speclight(pixel, spec2, pixel.l_exponent );
+             }*/
         }
     }
     else {
         pixel = phong_ambientlight(pixel, ambient);
         pixel = phong_diffuselight(pixel, diffuse);
+      //  pixel = phong_diffuselight(pixel, diff2 );
+
         pixel = phong_speclight(pixel, specular, pixel.l_exponent);
+      //  pixel = phong_speclight(pixel, spec2, pixel.l_exponent );
+
     }
 
         glColor3f( pixel.l_red, pixel.l_green, pixel.l_blue );
