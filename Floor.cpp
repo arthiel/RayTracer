@@ -31,6 +31,7 @@ void Floor::setLightExponent( float exp ){
 }
 
 Point Floor::intersect( Point3 origin, Vector3 dir ){
+    dir.normalize();
     Vector3 F ( 0, 80, origin.z );
 
     Vector3 floor( 1/70, -1, 1/200 );
