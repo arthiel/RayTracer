@@ -102,15 +102,27 @@ void model_space( Point3 origin, Point3 pixelPos ){
     Light diff2( .4, .4, 0, 1, Point3( 100, 140, -140 ));
     Light source2[] = { diff2, spec2 };
 
+    // Red Light
+    Light specR( 1, 0, 0, 1, Point3( 100, 150, -140 ));
+    Light diffR( 1, 0, 0, 1, Point3( 100, 140, -140 ));
+    Light sourceR[] = { diffR, specR };
+    // Green Light
+    Light diffG( 0, 1, 0, 1, Point3( 600, 450, -550) );
+    Light specG( 0, 1, 0, 1, Point3( 600, 450, -550 ));
+    Light sourceG[] = { diffG, specG };
+    // Blue Light
+    Light diffB( .1, .1, 1, 1, Point3( 300, 750, 0) );
+    Light specB( .1, .1, 1, 1, Point3( 300, 750, 0 ));
+    Light sourceB[] = { diffB, specB };
 
    // Define world objects.
 
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( 0, 1, 0 );
+    glass.setColors( .9, .9, .9 );
     glass.setLightExponent( 150 );
 
     Sphere mirror( 160, 180, 170, 80 );
-    mirror.setColors( 1, 0, 0 );
+    mirror.setColors( .9, .9, .9 );
     mirror.setLightExponent( 50 );
 
     Floor thisFloor = Floor();
@@ -139,7 +151,19 @@ void model_space( Point3 origin, Point3 pixelPos ){
     Point interGlass = glass.intersect( pixel.point, (pixel.point - source1[0]._position));
     Point interMirror = mirror.intersect( pixel.point, (pixel.point - source1[0]._position) );
     pixel = light_intersect( pixel, interGlass, interMirror, source1 );
-
+   
+ /*    interGlass = glass.intersect( pixel.point, (pixel.point - sourceR[0]._position));
+     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceR[0]._position) );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceR );
+ 
+interGlass = glass.intersect( pixel.point, (pixel.point - sourceG[0]._position));
+    interMirror = mirror.intersect( pixel.point, (pixel.point - sourceG[0]._position) );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceG );
+    
+ interGlass = glass.intersect( pixel.point, (pixel.point - sourceB[0]._position));
+     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceB[0]._position) );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceB);
+  */  
     glColor3f( pixel.l_red, pixel.l_green, pixel.l_blue );
 
     return;
