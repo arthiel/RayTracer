@@ -46,7 +46,25 @@ Point Floor::intersect( Point3 origin, Vector3 dir ){
         if( poi.x > 500 || poi.x < -450 )
             return Point();
         else if( poi.z > -20 && poi.z < 2000 )
-            return Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent);
+            return texture( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent) );
     }
     return Point();
+}
+
+Point Floor::texture( Point pix){
+    // If odd row 
+    if( int(pix.point.z)%100 <= 50 ){
+        if( pix.point.x > 0 ? int(pix.point.x)%100 <= 50 : int(-pix.point.x)%100 > 50 )
+            pix.setColors( 1, 0, 0 );   // Odd Column
+        else
+            pix.setColors( 1, 1, 0 );   // Even Column
+    }
+    // If even row
+    else {
+        if( pix.point.x > 0 ? int(pix.point.x)%100 <= 50 : int(-pix.point.x)%100 > 50 )
+            pix.setColors( 1, 1, 0 );   // Odd Column
+        else
+            pix.setColors( 1, 0, 0 );   // Even Column    
+    }
+    return pix;
 }

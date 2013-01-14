@@ -7,6 +7,7 @@
 #define FLOOR_H
 
 #include "../vecmath.h"
+#include <math.h>
 #include "Point.h"
 
 class Floor{
@@ -29,5 +30,6 @@ public:
     // Calculate intersection
     Point intersect( Point3 origin, Vector3 dir );
 
+    Point texture( Point pixel );
 };
 #endif

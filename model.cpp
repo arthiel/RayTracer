@@ -94,7 +94,7 @@ void model_space( Point3 origin, Point3 pixelPos ){
     Light ambient( 1, 1, 1, .2 );
     
     // Source 1
-    Light diffuse( .4, .4, .4, 1, Point3( 600, 450, -550) );
+    Light diffuse( .5, .5, .5, 1, Point3( 600, 450, -550) );
     Light specular( 1, 1, 1, 1, Point3( 600, 450, -550 ));
     Light source1[] = { diffuse, specular };
     //Source2
@@ -118,11 +118,11 @@ void model_space( Point3 origin, Point3 pixelPos ){
    // Define world objects.
 
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( .9, .9, .9 );
+    glass.setColors( 0, 1, 0 );
     glass.setLightExponent( 150 );
 
     Sphere mirror( 160, 180, 170, 80 );
-    mirror.setColors( .9, .9, .9 );
+    mirror.setColors( 1, 0, 0 );
     mirror.setLightExponent( 50 );
 
     Floor thisFloor = Floor();
