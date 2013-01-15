@@ -30,6 +30,11 @@ public:
     // Calculate intersection
     Point intersect( Point3 origin, Vector3 dir );
 
-    Point texture( Point pixel );
+    int modX( int x, int size );
+
+    Point checker( Point pixel, int size );
+    Point diagonal( Point pixel, int size );
+    Point hole( Point pix, int size );
+
 };
 #endif

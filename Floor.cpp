@@ -46,25 +46,84 @@ Point Floor::intersect( Point3 origin, Vector3 dir ){
         if( poi.x > 500 || poi.x < -450 )
             return Point();
         else if( poi.z > -20 && poi.z < 2000 )
-            return texture( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent) );
+            return diagonal( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent), 50 );
     }
     return Point();
 }
 
-Point Floor::texture( Point pix){
+Point Floor::checker( Point pix, int size){
     // If odd row 
-    if( int(pix.point.z)%100 <= 50 ){
-        if( pix.point.x > 0 ? int(pix.point.x)%100 <= 50 : int(-pix.point.x)%100 > 50 )
+    if( int(pix.point.z)%(size*2) <= size ){
+        if( pix.point.x > 0 ? int(pix.point.x)%(size*2) <= size : int(-pix.point.x)%(size*2) > size)
             pix.setColors( 1, 0, 0 );   // Odd Column
         else
             pix.setColors( 1, 1, 0 );   // Even Column
     }
     // If even row
     else {
-        if( pix.point.x > 0 ? int(pix.point.x)%100 <= 50 : int(-pix.point.x)%100 > 50 )
+        if( pix.point.x > 0 ? int(pix.point.x)%(size*2) <= size : int(-pix.point.x)%(size*2) > size )
             pix.setColors( 1, 1, 0 );   // Odd Column
         else
             pix.setColors( 1, 0, 0 );   // Even Column    
+    }
+    return pix;
+}
+
+/**
+ * Simplifies the mod value to smaller text-area.
+ **/
+int Floor::modX( int x, int size ){
+    return int(x)%(size*2);
+}
+
+/** 
+ * Creates a diagonal pattern on the floor
+ **/
+Point Floor::diagonal( Point pix, int size ){
+    float px = pix.point.x;
+    float pz = pix.point.z;
+
+    // (size*2)-modX(-px,size) converts the x point when it crosses over to the negative values.
+
+    // If odd row 
+    if( modX(pz, size) <= size ){
+        if( px > 0 ? modX(px, size) <= size : (size*2)-modX(-px, size) <= size){ // Odd Column
+            if( px > 0 ? modX( px, size ) <= modX( pz, size ) : (size*2)-modX(-px, size ) <= modX(pz, size) ){
+                pix.setColors( 1, 0, 0 );   
+            }
+            else {
+                pix.setColors( 1, 1, 0 );
+            }
+        }
+        else{ // Even Column
+            if( px > 0 ? modX( px, size/2 ) >= modX( pz, size ) : (size)-modX(-px, size) >= modX(pz, size) ){
+                pix.setColors( 1, 0, 0 );
+            }
+            else {
+                pix.setColors( 1, 1, 0 );
+            }
+        }
+    }
+    // If even row
+    else {
+        if( px > 0 ? modX(px,size) <= size : (size*2)-modX(-px, size) <= size ){ // Odd Column
+            // If X and Z are equivalent, or Z is greater than X, make it red. This creates a triangle in the upper left.
+            if( px > 0 ? modX( px, size ) >= modX( pz, size/2 ) : (size*2)-modX(-px, size ) > modX(pz, size/2) ){
+                pix.setColors( 1, 0, 0 );   
+            }
+            else {
+                pix.setColors(1, 1, 0 );
+            }
+        }
+        else{ // Even Column
+            // If X and Z are equivalent, or Z is less than X, make it red. This creates a triangle in the lower right.
+            if( px > 0 ? modX( px, size ) <= modX( pz, size ) : (size*2)-modX(-px, size) < modX(pz, size) ){
+                pix.setColors( 1, 0, 0 );   
+            }
+            else {
+                pix.setColors( 1, 1, 0 );
+            }        
+        }
     }
     return pix;
 }
