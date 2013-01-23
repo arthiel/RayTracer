@@ -84,23 +84,10 @@ Point light_intersect( Point pixel, Point interGlass, Point interMirror, Light s
     return pixel;
 }
 
-/*** 
-* Position and place everything into model space.
-***/
-void model_space( Point3 origin, Point3 pixelPos ){
-    Vector3 dir = pixelPos - origin;
-
-    // Define Light Sources
-    Light ambient( 1, 1, 1, .2 );
-    
-    // Source 1
-    Light diffuse( .5, .5, .5, 1, Point3( 600, 450, -550) );
-    Light specular( 1, 1, 1, 1, Point3( 600, 450, -550 ));
-    Light source1[] = { diffuse, specular };
-    //Source2
-    Light spec2( 0, .4, .4, 1, Point3( 100, 150, -140 ));
-    Light diff2( .4, .4, 0, 1, Point3( 100, 140, -140 ));
-    Light source2[] = { diff2, spec2 };
+/** 
+ * Add more light sources. This was for Checkpoint 3.
+ ***/
+Point more_lightsource( Point pixel, Sphere glass, Sphere mirror ){
 
     // Red Light
     Light specR( 1, 0, 0, 1, Point3( 100, 150, -140 ));
@@ -114,6 +101,37 @@ void model_space( Point3 origin, Point3 pixelPos ){
     Light diffB( .1, .1, 1, 1, Point3( 300, 750, 0) );
     Light specB( .1, .1, 1, 1, Point3( 300, 750, 0 ));
     Light sourceB[] = { diffB, specB };
+
+       
+    Point interGlass = glass.intersect( pixel.point, (pixel.point - sourceR[0]._position));
+    Point interMirror = mirror.intersect( pixel.point, (pixel.point - sourceR[0]._position) );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceR );
+
+    interGlass = glass.intersect( pixel.point, (pixel.point - sourceG[0]._position));
+    interMirror = mirror.intersect( pixel.point, (pixel.point - sourceG[0]._position) );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceG );
+
+    interGlass = glass.intersect( pixel.point, (pixel.point - sourceB[0]._position));
+    interMirror = mirror.intersect( pixel.point, (pixel.point - sourceB[0]._position) );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceB);
+
+    return pixel;
+}
+
+/*** 
+* Position and place everything into model space.
+***/
+void model_space( Point3 origin, Point3 pixelPos ){
+    Vector3 dir = pixelPos - origin;
+
+    // Define Light Sources
+    Light ambient( 1, 1, 1, .2 );
+    
+    // Source 1
+    Light diffuse( .5, .5, .5, 1, Point3( 600, 450, -550) );
+    Light specular( 1, 1, 1, 1, Point3( 600, 450, -550 ));
+    Light source1[] = { diffuse, specular };
+
 
    // Define world objects.
 
@@ -151,19 +169,10 @@ void model_space( Point3 origin, Point3 pixelPos ){
     Point interGlass = glass.intersect( pixel.point, (pixel.point - source1[0]._position));
     Point interMirror = mirror.intersect( pixel.point, (pixel.point - source1[0]._position) );
     pixel = light_intersect( pixel, interGlass, interMirror, source1 );
-   
- /*    interGlass = glass.intersect( pixel.point, (pixel.point - sourceR[0]._position));
-     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceR[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, sourceR );
- 
-interGlass = glass.intersect( pixel.point, (pixel.point - sourceG[0]._position));
-    interMirror = mirror.intersect( pixel.point, (pixel.point - sourceG[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, sourceG );
-    
- interGlass = glass.intersect( pixel.point, (pixel.point - sourceB[0]._position));
-     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceB[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, sourceB);
-  */  
+
+    // Uncomment for Multiple Lightsources.
+    // pixel = more_lightsource( pixel, glass, mirror );
+
     glColor3f( pixel.l_red, pixel.l_green, pixel.l_blue );
 
     return;

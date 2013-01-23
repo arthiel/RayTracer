@@ -32,7 +32,11 @@ class Sphere {
 	float _red;
 	float _green;
 	float _blue;
-		float l_red, l_blue, l_green;
+    float l_red, l_blue, l_green;   // Light Colors
+
+    // Reflection Settings
+    float kr;   // Reflection Constant
+    float kt;   // Transmission Constant (Non-transparent for Checkpoint 5)
 
 
 	// Constructor for defaults ( No light functions )
@@ -42,15 +46,10 @@ class Sphere {
 	
 	void setLighting( Light ambient, Light diffuse, Light specular, float exponent );
 	void setColors( float red, float green, float blue );
-   void setLightExponent( float exp );
+    void setLightExponent( float exp );
 
 
 	Point intersect( Point3, Vector3 );
-    Point backIntersect(Point3 origin, Vector3 dir );
-    Point frontIntersect(Point3 origin, Vector3 dir );
 
-	//void phong_ambientlight();
-	//void phong_diffuselight();
-	//void phong_speclight();
 };
 #endif
