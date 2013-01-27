@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "model.h"
 
-const int MAX_DEPTH = 5;
+const int MAX_DEPTH = 2;
 
 /***
 * Calculates the ambient light effect on the sphere.
@@ -86,6 +86,17 @@ Point light_intersect( Point pixel, Point interGlass, Point interMirror, Light s
     return pixel;
 }
 
+/**
+ * Check if it is in the actual intersection area of that point.
+ * Using a fudge factor to approx it.
+ **/
+bool intersect( Point pixel, Point inter ){
+    float fudge = .5;
+    return  ( inter.point.x < pixel.point.x+fudge && inter.point.x > pixel.point.x-fudge) &&
+            ( inter.point.y < pixel.point.y+fudge && inter.point.y > pixel.point.y-fudge) &&
+            ( inter.point.z < pixel.point.z+fudge && inter.point.z > pixel.point.z-fudge);
+}
+
 /** 
  * Find first intersection point of a ray. Put in a Point object.
  *
@@ -104,43 +115,20 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     Light ambient( 1, 1, 1, .2); // .2
     
     // Source 1
-    Light diffuse( .5, .5, .5, 1, Point3( 300, 450, 100) );
+    Light diffuse( .5, .5, .5, 1, Point3( 300, 450, -550) );
     Light specular( 1, 1, 1, 1, Point3( 300, 450, -550 ));
     Light source1[] = { diffuse, specular };
 
-        float fudge = .5;
-
     // If it isn't on the glass sphere, check the mirrored.
-    if( !pixel.active  || 
-        ( depth != 1 && dir.x < 0 && pixel.active)
-        ){
-   
-   // if( !pixel.active ){
+    if( !pixel.active ){
         pixel = mirror.intersect( origin, dir );
-        // If it isn't on mirrored sphere, check the floor.
-        if( (pixel.active && depth != 1)  || (
-      
-            ( pixel.point.x < origin.x+fudge && pixel.point.x > origin.x-fudge) &&
-            ( pixel.point.y <origin.y+fudge && pixel.point.y > origin.y-fudge) &&
-            ( pixel.point.z < origin.z+fudge && pixel.point.z > origin.z-fudge)))
-        {
-            pixel = thisFloor.intersect( origin, dir );
-            // If it isn't on the floor, return background color.
-            if( !pixel.active ) {
-                //glColor3f( 0, 0, 1 );
-                pixel.setColors( 0, 0, 1 );
-                pixel.setLightColors( 0, 0, 1 );
-                return pixel;
-            } // End Floor
-        } // End Mirror
-        // } // End Glass
 
-        else if( !pixel.active ) {
-            // if( !pixel.active ){
-            //pixel = mirror.intersect( origin, dir );
-            // If it isn't on mirrored sphere, check the floor.
-            // if( !pixel.active ){
+        // If it isn't on mirrored sphere, check the floor.
+        if( !pixel.active || depth != 1) {//(pixel.active && !intersect( pixel, origin) && depth != 1) ) {
             pixel = thisFloor.intersect( origin, dir );
+            if( depth != 1 && pixel.active ){
+                std::cout << "FLOORED."<< std::endl;
+            }
             // If it isn't on the floor, return background color.
             if( !pixel.active ) {
                 //glColor3f( 0, 0, 1 );
@@ -160,31 +148,20 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
 
     if( depth < MAX_DEPTH ){
         if( pixel.kr > 0 ){
+            //Vector3 refRay = pixel.surfaceNormal;
 
-            // Reflect from object to next intersect.
-            Vector3 refDir = -(origin - pixel.point); // adding -1 made it bring in wider curve on reflect.
-            refDir.normalize();
-            dir.normalize();
-            Vector3 n = pixel.surfaceNormal;
+            if( pixel.surfaceNormal.z > 0 ){
+               std::cout<< "Backward" << std::endl;
+            }
 
-            double A = pixel.surfaceNormal * refDir;
-            Vector3 refRay =  refDir + 2* pixel.surfaceNormal * -A;
-           // refRay.normalize();
-
-           // Vector3 refRay =  refDir  - 2 * ( ( refDir * pixel.surfaceNormal ) / ( pixel.surfaceNormal * pixel.surfaceNormal ) ) * pixel.surfaceNormal;
-           // Vector3 refRay = pixel.surfaceNormal;
+            Vector3 refRay = dir - 2 * pixel.surfaceNormal * ( dir * pixel.surfaceNormal );
+            //Vector3 refRay = dir - 2 * ( ( dir * pixel.surfaceNormal ) / ( pixel.surfaceNormal * pixel.surfaceNormal ) ) * pixel.surfaceNormal;
             refRay.normalize();
-            //refRay.y = 1 - refRay.y;
-          //  refRay.x = -refRay.x;
-
+            refRay.y *= -1;
             Point inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
             pixel.l_red += pixel.kr * inter.l_red;
             pixel.l_green += pixel.kr * inter.l_green;
             pixel.l_blue += pixel.kr * inter.l_blue;
-            //pixel.l_red = pixel.l_red > 1 ? 1 : pixel.l_red;
-            //pixel.l_green = pixel.l_green > 1 ? 1 : pixel.l_green;
-            //pixel.l_blue = pixel.l_blue > 1 ? 1 : pixel.l_blue;
-
         }
       /*  if( pixel.kt > 0 ){
             //transmission stuff. Nothing for now.
@@ -237,7 +214,7 @@ void model_space( Point3 origin, Point3 pixelPos ){
 
    // Define world objects.
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( 0, 1, 0 );
+    glass.setColors( .9, .9, .9 );
     glass.setLightExponent( 150 );
     glass.setReflectConstant( 0 );
 
