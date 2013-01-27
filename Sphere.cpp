@@ -90,7 +90,7 @@ Point Sphere::intersect( Point3 origin, Vector3 dir ){
         pt_intersect = Point3( origin.x + dir.x * w, origin.y + dir.y * w, origin.z + dir.z * w );
 
         // Return a point with the intersection, surface normal, material's red, green, and blue values, and light exponent.
-        return Point( pt_intersect, (pt_intersect - Point3( _x, _y, _z)), _red, _green, _blue, l_exponent);
+        return Point( pt_intersect, (pt_intersect - Point3( _x, _y, _z)), _red, _green, _blue, l_exponent, kr);
     }
     // If the point intersects the sphere twice.
     else if( w > 0 ){
@@ -106,8 +106,12 @@ Point Sphere::intersect( Point3 origin, Vector3 dir ){
         }
 
         // Return a point with the intersection, surface normal, material's red, green, and blue values, and light exponent.
-        return Point( pt_intersect, (pt_intersect - Point3( _x, _y, _z)), _red, _green, _blue, l_exponent);
+        return Point( pt_intersect, (pt_intersect - Point3( _x, _y, _z)), _red, _green, _blue, l_exponent, kr);
     }
     // There is no intersection, return an empty point.
     return Point();
+}
+
+void Sphere::setReflectConstant( float a ){
+    kr = a;
 }

@@ -19,6 +19,9 @@ public:
     // Post-Light colors
     float l_red, l_green, l_blue, l_exponent;
 
+    //Reflection
+    float kr;
+
     // Constructors
     Floor();
     Floor( Point3 front1, Point3 front2, Point3 back1, Point3 back2 );
@@ -35,6 +38,8 @@ public:
     Point checker( Point pixel, int size );
     Point diagonal( Point pixel, int size );
     Point hole( Point pix, int size );
+    void setReflectConstant( float a );
+    void setTransmissionConstant( float a );
 
 };
 #endif

@@ -19,14 +19,17 @@ Point::Point( Point3 px, Vector3 normal ){
 
 }
 
-Point::Point( Point3 px, Vector3 normal, float r, float g, float b , float exp){
+Point::Point( Point3 px, Vector3 normal, float r, float g, float b , float exp, float refl){
     point = px;
     red = r;
     green = g;
     blue = b;
+    setLightColors( 0, 0, 0 );
+
     surfaceNormal = normal;
     surfaceNormal.normalize();
     l_exponent = exp;
+    kr = refl;
     active = true;
 }
 
@@ -34,6 +37,7 @@ void Point::setColors( float r, float g, float b ){
    red = r;
    green = g;
    blue = b;
+   setLightColors( 0, 0, 0 );
 }
 
 void Point::setLightColors( float r, float g, float b ){
@@ -44,4 +48,8 @@ void Point::setLightColors( float r, float g, float b ){
 
 void Point::setLightExponent( float exp ){
     l_exponent = exp;
+}
+
+void Point::setReflectConstant( float a ){
+    kr = a;
 }

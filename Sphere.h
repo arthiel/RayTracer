@@ -47,6 +47,8 @@ class Sphere {
 	void setLighting( Light ambient, Light diffuse, Light specular, float exponent );
 	void setColors( float red, float green, float blue );
     void setLightExponent( float exp );
+    void setReflectConstant( float a );
+    void setTransmissionConstant( float a );
 
 
 	Point intersect( Point3, Vector3 );

@@ -40,13 +40,14 @@ Point Floor::intersect( Point3 origin, Vector3 dir ){
     float w = -( floor.x * origin.x + floor.y * origin.y + floor.z + origin.z + F.length() ) / (floor.x * dir.x + floor.y * dir.y + floor.z * dir.z );
     //float w = (floor * origin + F ) / (floor * dir );
     if( w > 0 ){
-        Point3 poi( origin.x + dir.x * w , origin.y + dir.y * w, origin.z + dir.z * w );
+        Point3 poi( origin.x + dir.x * w , 80 /*origin.y + dir.y * w*/, origin.z + dir.z * w );
         // Checks if plane is in bounds of the floor.
         // Floor changes on X and Z values.
         if( poi.x > 500 || poi.x < -450 )
             return Point();
         else if( poi.z > -20 && poi.z < 2000 )
-            return diagonal( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent), 50 );
+            return checker( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent, kr), 50 );
+        
     }
     return Point();
 }
@@ -126,4 +127,8 @@ Point Floor::diagonal( Point pix, int size ){
         }
     }
     return pix;
+}
+
+void Floor::setReflectConstant( float a ){
+    kr = a;
 }

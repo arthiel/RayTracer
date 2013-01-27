@@ -28,7 +28,7 @@ void display( void ){
             glVertex2d( x, y );
         }
 
-        cout << y << endl;
+        //cout << y << endl;
     }
     glEnd();
 
