@@ -120,7 +120,7 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     Light source1[] = { diffuse, specular };
 
     // If it isn't on the glass sphere, check the mirrored.
-    if( !pixel.active ){
+    if( !pixel.active || (depth != 1 && dir.x < 0 )){
         pixel = mirror.intersect( origin, dir );
 
         // If it isn't on mirrored sphere, check the floor.
@@ -214,11 +214,11 @@ void model_space( Point3 origin, Point3 pixelPos ){
 
    // Define world objects.
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( .9, .9, .9 );
+    glass.setColors( 0, 1, 0 );
     glass.setLightExponent( 150 );
     glass.setReflectConstant( 0 );
 
-    Sphere mirror( 100, 180, 200, 80 ); // z=170, x = 160; 100, 200
+    Sphere mirror( 140, 230, 200, 80 ); // z=170, x = 160; 100, 200
     mirror.setColors( .9, .9, .9 );
     mirror.setLightExponent( 50 );
     mirror.setReflectConstant( 1 );
