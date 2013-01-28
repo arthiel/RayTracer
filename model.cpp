@@ -126,9 +126,7 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
         // If it isn't on mirrored sphere, check the floor.
         if( !pixel.active || depth != 1) {//(pixel.active && !intersect( pixel, origin) && depth != 1) ) {
             pixel = thisFloor.intersect( origin, dir );
-            if( depth != 1 && pixel.active ){
-                std::cout << "FLOORED."<< std::endl;
-            }
+
             // If it isn't on the floor, return background color.
             if( !pixel.active ) {
                 //glColor3f( 0, 0, 1 );
@@ -146,18 +144,16 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     Point interMirror = mirror.intersect( pixel.point, (pixel.point - source1[0]._position) );
     pixel = light_intersect( pixel, interGlass, interMirror, source1 );
 
+    // Stopping reflection/refraction after a certain depth.
     if( depth < MAX_DEPTH ){
         if( pixel.kr > 0 ){
-            //Vector3 refRay = pixel.surfaceNormal;
 
-            if( pixel.surfaceNormal.z > 0 ){
-               std::cout<< "Backward" << std::endl;
-            }
-
+            // Calculate the reflection
             Vector3 refRay = dir - 2 * pixel.surfaceNormal * ( dir * pixel.surfaceNormal );
-            //Vector3 refRay = dir - 2 * ( ( dir * pixel.surfaceNormal ) / ( pixel.surfaceNormal * pixel.surfaceNormal ) ) * pixel.surfaceNormal;
             refRay.normalize();
+            // Y is upside down.
             refRay.y *= -1;
+            // Intersect recursion
             Point inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
             pixel.l_red += pixel.kr * inter.l_red;
             pixel.l_green += pixel.kr * inter.l_green;
