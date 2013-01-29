@@ -18,6 +18,13 @@ Point phong_ambientlight(Point dot, Light amb);
 Point phong_diffuselight(Point dot, Light diffuse);
 Point phong_speclight(Point dot, Light spec, float exponent);
 
+Point light_intersect( Point pixel, Point interGlass, Point interMirror, Light source[] );
+bool intersect( Point pixel, Point inter );
+Point cone_reflection( Sphere glass, Sphere mirror, Floor thisFloor, Point pixel, Vector3 refRay, int depth);
+Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, Vector3 dir, int depth );
+Point more_lightsource( Point pixel, Sphere glass, Sphere mirror );
+
+
 /*** 
  * Position and place everything into model space.
  ***/

@@ -98,6 +98,50 @@ bool intersect( Point pixel, Point inter ){
 }
 
 /** 
+ * Throw multiple reflection rays "at random" inside of a cone to approximate a BRDF.
+ **/
+Point cone_reflection( Sphere glass, Sphere mirror, Floor thisFloor, Point pixel, Vector3 refRay, int depth){
+    
+            refRay.x += .01;
+            Point inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            pixel.l_red += pixel.kr * inter.l_red;
+            pixel.l_green += pixel.kr * inter.l_green;
+            pixel.l_blue += pixel.kr * inter.l_blue;
+            refRay.z += .01;
+
+            inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            pixel.l_red += pixel.kr * inter.l_red;
+            pixel.l_green += pixel.kr * inter.l_green;
+            pixel.l_blue += pixel.kr * inter.l_blue;
+            refRay.y += .01;
+
+            inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            pixel.l_red += pixel.kr * inter.l_red;
+            pixel.l_green += pixel.kr * inter.l_green;
+            pixel.l_blue += pixel.kr * inter.l_blue;
+            
+            refRay.x -= .02;
+            inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            pixel.l_red += pixel.kr * inter.l_red;
+            pixel.l_green += pixel.kr * inter.l_green;
+            pixel.l_blue += pixel.kr * inter.l_blue;
+
+            refRay.z -= .02;
+           inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            pixel.l_red += pixel.kr * inter.l_red;
+            pixel.l_green += pixel.kr * inter.l_green;
+            pixel.l_blue += pixel.kr * inter.l_blue;
+
+            refRay.y -= .02;
+            inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            pixel.l_red += pixel.kr * inter.l_red;
+            pixel.l_green += pixel.kr * inter.l_green;
+            pixel.l_blue += pixel.kr * inter.l_blue;
+            
+            return pixel;
+}
+
+/** 
  * Find first intersection point of a ray. Put in a Point object.
  *
  * With recursion, ORIGIN will be the PIXEL, and DIR will be the RAY.
@@ -158,6 +202,8 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
             pixel.l_red += pixel.kr * inter.l_red;
             pixel.l_green += pixel.kr * inter.l_green;
             pixel.l_blue += pixel.kr * inter.l_blue;
+
+            //cone_reflection( glass, mirror, thisFloor, pixel, refRay, depth );
         }
       /*  if( pixel.kt > 0 ){
             //transmission stuff. Nothing for now.
@@ -167,6 +213,7 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
 
     return pixel;
 }
+
 
 /** 
  * Add more light sources. This was for Checkpoint 3.
