@@ -21,6 +21,8 @@ public:
 
     //Reflection
     float kr;
+    // Transmission
+    float kt;
 
     // Constructors
     Floor();

@@ -26,11 +26,13 @@ public:
     Point();
     Point( Point3 point );
     Point( Point3 point, Vector3 normal );
-    Point( Point3 point, Vector3 normal, float red, float green, float blue, float exp, float refl );
+    Point( Point3 point, Vector3 normal, float red, float green, float blue, float exp, float refl, float trans );
 
     void setColors( float red, float green, float blue );
     void setLightColors( float red, float green, float blue );
     void setLightExponent( float exp );
     void setReflectConstant( float a );
+    void setTransmissionConstant( float a );
+
 };
 #endif

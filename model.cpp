@@ -164,11 +164,13 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     Light source1[] = { diffuse, specular };
 
     // If it isn't on the glass sphere, check the mirrored.
-    if( !pixel.active || (depth != 1 && dir.x < 0 )){
+    if( !pixel.active || intersect( pixel.point, origin) || (depth != 1 && dir.x < 0 )){
         pixel = mirror.intersect( origin, dir );
 
         // If it isn't on mirrored sphere, check the floor.
-        if( !pixel.active || depth != 1) {//(pixel.active && !intersect( pixel, origin) && depth != 1) ) {
+        // depth != 1 is to ignore it on reflection.
+        Point glassInt = glass.intersect(origin, dir);
+        if( !pixel.active || (depth != 1 && pixel.active && !intersect( glassInt, origin)) ){ // pixel.active && (intersect( pixel.point, origin ) && depth != 1)) {//(pixel.active && !intersect( pixel, origin) && depth != 1) ) {
             pixel = thisFloor.intersect( origin, dir );
 
             // If it isn't on the floor, return background color.
@@ -205,9 +207,23 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
 
             //cone_reflection( glass, mirror, thisFloor, pixel, refRay, depth );
         }
-      /*  if( pixel.kt > 0 ){
+        if( pixel.kt > 0 ){
             //transmission stuff. Nothing for now.
-        }*/
+            //std::cout << "Hello" << std::endl;
+            float nwater = 1;
+            float nit = nwater / 0.95;
+            float discrim =  1 + ( nit * nit * (pow( -dir * pixel.surfaceNormal,2) - 1 ));
+            Vector3 refRay = nit * dir + ( nit * ( -dir * pixel.surfaceNormal ) - sqrt( discrim )) * pixel.surfaceNormal;
+            refRay.normalize();
+            Point inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
+            /*if( discrim >= 0 ){
+                refRay = nit * dir + ( nit * ( -dir * inter.surfaceNormal ) - sqrt( discrim )) * inter.surfaceNormal;
+            }*/
+            inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth +1 );
+            pixel.l_red += pixel.kt * inter.l_red;
+            pixel.l_green += pixel.kt * inter.l_green;
+            pixel.l_blue += pixel.kt * inter.l_blue;
+        }
         return pixel;
     }
 
@@ -257,19 +273,22 @@ void model_space( Point3 origin, Point3 pixelPos ){
 
    // Define world objects.
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( 0, 1, 0 );
+    glass.setColors( .2, .2, .2);
     glass.setLightExponent( 150 );
     glass.setReflectConstant( 0 );
+    glass.setTransmissionConstant( 1 );
 
     Sphere mirror( 140, 230, 200, 80 ); // z=170, x = 160; 100, 200
-    mirror.setColors( .9, .9, .9 );
+    mirror.setColors( .4, .4, .4 );
     mirror.setLightExponent( 50 );
     mirror.setReflectConstant( 1 );
+    mirror.setTransmissionConstant( 0 );
 
     Floor thisFloor = Floor();
     thisFloor.setColors( 1, 1, 0 );
     thisFloor.setLightExponent( 350 );
     thisFloor.setReflectConstant( 0 );
+    thisFloor.setTransmissionConstant( 0 );
 
 
     // Finds the nearest intersection (in pixel)

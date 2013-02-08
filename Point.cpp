@@ -19,7 +19,7 @@ Point::Point( Point3 px, Vector3 normal ){
 
 }
 
-Point::Point( Point3 px, Vector3 normal, float r, float g, float b , float exp, float refl){
+Point::Point( Point3 px, Vector3 normal, float r, float g, float b , float exp, float refl, float trans){
     point = px;
     red = r;
     green = g;
@@ -30,6 +30,7 @@ Point::Point( Point3 px, Vector3 normal, float r, float g, float b , float exp, 
     surfaceNormal.normalize();
     l_exponent = exp;
     kr = refl;
+    kt = trans;
     active = true;
 }
 
@@ -52,4 +53,7 @@ void Point::setLightExponent( float exp ){
 
 void Point::setReflectConstant( float a ){
     kr = a;
+}
+void Point::setTransmissionConstant( float a ){
+    kt = a;
 }

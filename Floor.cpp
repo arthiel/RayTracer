@@ -46,7 +46,7 @@ Point Floor::intersect( Point3 origin, Vector3 dir ){
         if( poi.x > 500 || poi.x < -450 )
             return Point();
         else if( poi.z > -20 && poi.z < 2000 )
-            return checker( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent, kr), 50 );
+            return checker( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent, kr, kt), 50 );
         
     }
     return Point();
@@ -131,4 +131,8 @@ Point Floor::diagonal( Point pix, int size ){
 
 void Floor::setReflectConstant( float a ){
     kr = a;
+}
+
+void Floor::setTransmissionConstant( float a ){
+    kt = a;
 }
