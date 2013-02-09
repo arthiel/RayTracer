@@ -52,6 +52,6 @@ class Sphere {
 
 
 	Point intersect( Point3, Vector3 );
-
+    Point backIntersect( Point3, Vector3 );
 };
 #endif

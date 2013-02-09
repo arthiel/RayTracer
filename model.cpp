@@ -4,16 +4,16 @@
 #include "stdafx.h"
 #include "model.h"
 
-const int MAX_DEPTH = 2;
+const int MAX_DEPTH = 4;
 
 /***
 * Calculates the ambient light effect on the sphere.
 * Based on the Phong model
 ***/
 Point phong_ambientlight(Point dot, Light amb){
-    dot.l_red += amb._ammount * (dot.red * amb._red);
-    dot.l_green += amb._ammount * (dot.green * amb._green);
-    dot.l_blue += amb._ammount * (dot.blue * amb._blue);
+    dot.l_red = amb._ammount * (dot.red * amb._red);
+    dot.l_green = amb._ammount * (dot.green * amb._green);
+    dot.l_blue = amb._ammount * (dot.blue * amb._blue);
     dot.setLightColors( dot.l_red, dot.l_green, dot.l_blue );
     return dot;
 }
@@ -162,15 +162,16 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     Light diffuse( .5, .5, .5, 1, Point3( 300, 450, -550) );
     Light specular( 1, 1, 1, 1, Point3( 300, 450, -550 ));
     Light source1[] = { diffuse, specular };
-
     // If it isn't on the glass sphere, check the mirrored.
-    if( !pixel.active || intersect( pixel.point, origin) || (depth != 1 && dir.x < 0 )){
-        pixel = mirror.intersect( origin, dir );
+    Point inMirr = mirror.intersect( origin, dir );
+
+    if( !pixel.active || depth != 1 ){//intersect( pixel.point, origin) || intersect( inMirr, origin ) ){// || (depth > 1 && dir.x < 0 )){
+        pixel = inMirr;
 
         // If it isn't on mirrored sphere, check the floor.
         // depth != 1 is to ignore it on reflection.
         Point glassInt = glass.intersect(origin, dir);
-        if( !pixel.active || (depth != 1 && pixel.active && !intersect( glassInt, origin)) ){ // pixel.active && (intersect( pixel.point, origin ) && depth != 1)) {//(pixel.active && !intersect( pixel, origin) && depth != 1) ) {
+        if( !pixel.active || (depth > 1 && pixel.active && !intersect( glassInt, origin)) ){ // pixel.active && (intersect( pixel.point, origin ) && depth != 1)) {//(pixel.active && !intersect( pixel, origin) && depth != 1) ) {
             pixel = thisFloor.intersect( origin, dir );
 
             // If it isn't on the floor, return background color.
@@ -183,6 +184,10 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
         } // End Mirror
         // } // End Glass
     }
+    /*else if( depth > 1 && pixel.active && !intersect( pixel.point, origin) ){
+        return pixel;
+    }*/
+
 
     // Calculate light equations. PHONG.
     pixel = phong_ambientlight(pixel, ambient);
@@ -211,15 +216,37 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
             //transmission stuff. Nothing for now.
             //std::cout << "Hello" << std::endl;
             float nwater = 1;
-            float nit = nwater / 0.95;
+            float nit = nwater /.95;
             float discrim =  1 + ( nit * nit * (pow( -dir * pixel.surfaceNormal,2) - 1 ));
-            Vector3 refRay = nit * dir + ( nit * ( -dir * pixel.surfaceNormal ) - sqrt( discrim )) * pixel.surfaceNormal;
-            refRay.normalize();
+            Vector3 refRay;
+            if( discrim < 0 ){
+                 refRay = dir - 2 * pixel.surfaceNormal * ( dir * pixel.surfaceNormal );
+                 refRay.normalize();
+
+               //  refRay.y *= -1;
+                 Point gl = glass.backIntersect( pixel.point, refRay );
+                 gl.surfaceNormal *= -1;
+                 refRay = refRay - 2 * gl.surfaceNormal * ( refRay * gl.surfaceNormal );
+                 refRay.normalize();
+
+               //  refRay.y *= -1;
+            }
+            else {
+                refRay = nit * dir + ( nit * ( -dir * pixel.surfaceNormal ) - sqrt( discrim )) * pixel.surfaceNormal;
+                refRay.normalize();
+                // Find intersection point with itself.
+                Point gl = glass.backIntersect( pixel.point, refRay );
+                nit = 0.95 / nwater;
+                gl.surfaceNormal *= -1;
+                discrim =  1 + ( nit * nit * (pow( -refRay * gl.surfaceNormal,2) - 1 ));
+
+                refRay = nit * refRay + ( nit * ( -refRay * gl.surfaceNormal ) - sqrt( discrim )) * gl.surfaceNormal;
+                refRay.normalize();
+
+            }
+
+            // Refract to the world.
             Point inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth+1 );
-            /*if( discrim >= 0 ){
-                refRay = nit * dir + ( nit * ( -dir * inter.surfaceNormal ) - sqrt( discrim )) * inter.surfaceNormal;
-            }*/
-            inter = intersection( glass, mirror, thisFloor, pixel.point, refRay, depth +1 );
             pixel.l_red += pixel.kt * inter.l_red;
             pixel.l_green += pixel.kt * inter.l_green;
             pixel.l_blue += pixel.kt * inter.l_blue;
@@ -276,10 +303,10 @@ void model_space( Point3 origin, Point3 pixelPos ){
     glass.setColors( .2, .2, .2);
     glass.setLightExponent( 150 );
     glass.setReflectConstant( 0 );
-    glass.setTransmissionConstant( 1 );
+    glass.setTransmissionConstant( .85 );
 
     Sphere mirror( 140, 230, 200, 80 ); // z=170, x = 160; 100, 200
-    mirror.setColors( .4, .4, .4 );
+    mirror.setColors( .7, .7, .7 );
     mirror.setLightExponent( 50 );
     mirror.setReflectConstant( 1 );
     mirror.setTransmissionConstant( 0 );
