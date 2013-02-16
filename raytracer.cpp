@@ -16,7 +16,7 @@ const int WINDOW_WIDTH = 500;
 Point pixels[WINDOW_HEIGHT][WINDOW_WIDTH];
 
 float lume = 0;
-float l_max = 1000;    // Luminance Max [0...1]
+float l_max = 10;    // Luminance Max [0...1]
 float ld_max = 100; // Device Max 100 nits.
 
 /** 
@@ -54,7 +54,8 @@ void ward_tone(){
  * Reinhard Tone Reproduction 
  **/
 void reinhard_tone(){
-    float key_val = 0.18;
+    float kv = 0.18; //pixels[100][250].luminance;
+
     float log_avg_lum = 0;
     for( int x = 0; x < WINDOW_HEIGHT; x++ ){
         for( int y = 0; y < WINDOW_WIDTH; y++ ){
@@ -67,9 +68,9 @@ void reinhard_tone(){
     for( int x = 0; x < WINDOW_HEIGHT; x++ ){
         for( int y = 0; y < WINDOW_WIDTH; y++ ){
            // Part A of Compression
-            pixels[y][x].l_red = ( key_val * pixels[y][x].l_red ) / log_avg_lum;
-            pixels[y][x].l_green = ( key_val * pixels[y][x].l_green ) / log_avg_lum;
-            pixels[y][x].l_blue = ( key_val * pixels[y][x].l_blue ) / log_avg_lum;
+            pixels[y][x].l_red = ( kv * pixels[y][x].l_red ) / log_avg_lum;
+            pixels[y][x].l_green = ( kv * pixels[y][x].l_green ) / log_avg_lum;
+            pixels[y][x].l_blue = ( kv * pixels[y][x].l_blue ) / log_avg_lum;
            // Part B of Compression
             pixels[y][x].l_red = (pixels[y][x].l_red / (1 + pixels[y][x].l_red)) * ld_max;
             pixels[y][x].l_green = (pixels[y][x].l_green / (1 + pixels[y][x].l_green)) * ld_max;

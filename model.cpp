@@ -74,32 +74,15 @@ Point light_intersect( Point pixel, Point interGlass, Point interMirror, Light s
         ( interGlass.point.y < pixel.point.y+fudge && interGlass.point.y > pixel.point.y-fudge) &&
         ( interGlass.point.z < pixel.point.z+fudge && interGlass.point.z > pixel.point.z-fudge)))
     {
-       /* float nit = 1 / .95;
-        float discrim =  1 + ( nit * nit * (pow( -dir * interGlass.surfaceNormal,2) - 1 ));
-
-        Vector3 refRay = nit * dir + ( nit * ( -dir * interGlass.surfaceNormal ) - sqrt( discrim )) * interGlass.surfaceNormal;
-        Point gl = glass.backIntersect( interGlass.point, refRay );
-        discrim =  1 + ( nit * nit * (pow( -dir * interGlass.surfaceNormal,2) - 1 ));
-        gl.surfaceNormal *= -1;
-        refRay = nit * refRay + ( nit * ( -refRay * gl.surfaceNormal ) - sqrt( discrim )) * gl.surfaceNormal;
-        gl = glass.backIntersect( interGlass.point, refRay );
-
-        Vector3 shadow = pixel.point - source[0]._position;
-        Vector3 refract = gl.point - source[0]._position;
-        shadow.normalize();
-        refract.normalize();
-        if ( shadow == refract ){*/
             pixel = phong_diffuselight(pixel, source[0] );
             pixel = phong_speclight(pixel, source[1], pixel.l_exponent );
-
-    //    }
     }
-    if(
-        ( interMirror.active && !interGlass.active && 
+    else if(
+        ( interMirror.active && /*!interGlass.active && */
         ( interMirror.point.x < pixel.point.x+fudge && interMirror.point.x > pixel.point.x-fudge) &&
         ( interMirror.point.y < pixel.point.y+fudge && interMirror.point.y > pixel.point.y-fudge) &&
         ( interMirror.point.z < pixel.point.z+fudge && interMirror.point.z > pixel.point.z-fudge)) ||
-        ( !interMirror.active && !interGlass.active ))
+        ( !interMirror.active ))//&& !interGlass.active ))
     {
         pixel = phong_diffuselight(pixel, source[0] );
         pixel = phong_speclight(pixel, source[1], pixel.l_exponent );
