@@ -38,7 +38,7 @@ void Point::setColors( float r, float g, float b ){
    red = r;
    green = g;
    blue = b;
-   setLightColors( 0, 0, 0 );
+   setLightColors( 0, 0, 0);
 }
 
 void Point::setLightColors( float r, float g, float b ){
@@ -56,4 +56,8 @@ void Point::setReflectConstant( float a ){
 }
 void Point::setTransmissionConstant( float a ){
     kt = a;
+}
+
+void Point::setLuminance(){
+    luminance = (0.27 * l_red) + (0.67 * l_green) + (0.006 * l_blue );
 }

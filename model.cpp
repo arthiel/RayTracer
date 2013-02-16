@@ -11,9 +11,9 @@ const int MAX_DEPTH = 4;
 * Based on the Phong model
 ***/
 Point phong_ambientlight(Point dot, Light amb){
-    dot.l_red = amb._ammount * (dot.red * amb._red);
-    dot.l_green = amb._ammount * (dot.green * amb._green);
-    dot.l_blue = amb._ammount * (dot.blue * amb._blue);
+    dot.l_red += amb._ammount * (dot.red * amb._red);
+    dot.l_green += amb._ammount * (dot.green * amb._green);
+    dot.l_blue += amb._ammount * (dot.blue * amb._blue);
     dot.setLightColors( dot.l_red, dot.l_green, dot.l_blue );
     return dot;
 }
@@ -66,13 +66,35 @@ Point phong_speclight(Point dot, Light spec, float exponent){
  * interMirror - Point of intersection with mirror, if any.
  * source[] - the light source. [0] is diffuse [1] is specular.
  **/
-Point light_intersect( Point pixel, Point interGlass, Point interMirror, Light source[] ){
+Point light_intersect( Point pixel, Point interGlass, Point interMirror, Light source[], Vector3 dir, Sphere glass ){
 
     float fudge = .5;
     if( (interGlass.active && 
         ( interGlass.point.x < pixel.point.x+fudge && interGlass.point.x > pixel.point.x-fudge) &&
         ( interGlass.point.y < pixel.point.y+fudge && interGlass.point.y > pixel.point.y-fudge) &&
-        ( interGlass.point.z < pixel.point.z+fudge && interGlass.point.z > pixel.point.z-fudge)) || 
+        ( interGlass.point.z < pixel.point.z+fudge && interGlass.point.z > pixel.point.z-fudge)))
+    {
+       /* float nit = 1 / .95;
+        float discrim =  1 + ( nit * nit * (pow( -dir * interGlass.surfaceNormal,2) - 1 ));
+
+        Vector3 refRay = nit * dir + ( nit * ( -dir * interGlass.surfaceNormal ) - sqrt( discrim )) * interGlass.surfaceNormal;
+        Point gl = glass.backIntersect( interGlass.point, refRay );
+        discrim =  1 + ( nit * nit * (pow( -dir * interGlass.surfaceNormal,2) - 1 ));
+        gl.surfaceNormal *= -1;
+        refRay = nit * refRay + ( nit * ( -refRay * gl.surfaceNormal ) - sqrt( discrim )) * gl.surfaceNormal;
+        gl = glass.backIntersect( interGlass.point, refRay );
+
+        Vector3 shadow = pixel.point - source[0]._position;
+        Vector3 refract = gl.point - source[0]._position;
+        shadow.normalize();
+        refract.normalize();
+        if ( shadow == refract ){*/
+            pixel = phong_diffuselight(pixel, source[0] );
+            pixel = phong_speclight(pixel, source[1], pixel.l_exponent );
+
+    //    }
+    }
+    if(
         ( interMirror.active && !interGlass.active && 
         ( interMirror.point.x < pixel.point.x+fudge && interMirror.point.x > pixel.point.x-fudge) &&
         ( interMirror.point.y < pixel.point.y+fudge && interMirror.point.y > pixel.point.y-fudge) &&
@@ -193,7 +215,7 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     pixel = phong_ambientlight(pixel, ambient);
     Point interGlass = glass.intersect( pixel.point, (pixel.point - source1[0]._position));
     Point interMirror = mirror.intersect( pixel.point, (pixel.point - source1[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, source1 );
+    pixel = light_intersect( pixel, interGlass, interMirror, source1, pixel.point - source1[0]._position, glass );
 
     // Stopping reflection/refraction after a certain depth.
     if( depth < MAX_DEPTH ){
@@ -218,24 +240,35 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
             float nwater = 1;
             float nit = nwater /.95;
             float discrim =  1 + ( nit * nit * (pow( -dir * pixel.surfaceNormal,2) - 1 ));
-            Vector3 refRay;
-            if( discrim < 0 ){
-                 refRay = dir - 2 * pixel.surfaceNormal * ( dir * pixel.surfaceNormal );
+            Vector3 refRay = dir;
+            int count = 0;
+            Point gl = pixel;
+            //while( discrim < 0 && count < 3 ){
+            if( discrim <= 0 ){
+                 refRay = dir - 2 * gl.surfaceNormal * ( dir * gl.surfaceNormal );
                  refRay.normalize();
+                 gl = glass.backIntersect( pixel.point, refRay );
 
-               //  refRay.y *= -1;
-                 Point gl = glass.backIntersect( pixel.point, refRay );
-                 gl.surfaceNormal *= -1;
-                 refRay = refRay - 2 * gl.surfaceNormal * ( refRay * gl.surfaceNormal );
+                pixel.l_red += pixel.kt * gl.red;
+                pixel.l_green += pixel.kt * gl.green;
+                pixel.l_blue += pixel.kt * gl.blue;
+                 
+                 refRay = refRay - 2 * -gl.surfaceNormal * ( refRay * -gl.surfaceNormal );
                  refRay.normalize();
+                 gl = glass.intersect( gl.point, refRay );
+                 discrim =  1 + ( nit * nit * (pow( -refRay * -gl.surfaceNormal,2) - 1 ));
 
+                pixel.l_red += pixel.kt * gl.l_red;
+                pixel.l_green += pixel.kt * gl.l_green;
+                pixel.l_blue += pixel.kt * gl.l_blue;
+                 count++;
                //  refRay.y *= -1;
             }
             else {
-                refRay = nit * dir + ( nit * ( -dir * pixel.surfaceNormal ) - sqrt( discrim )) * pixel.surfaceNormal;
+                refRay = nit * refRay + ( nit * ( -refRay * gl.surfaceNormal ) - sqrt( discrim )) * gl.surfaceNormal;
                 refRay.normalize();
                 // Find intersection point with itself.
-                Point gl = glass.backIntersect( pixel.point, refRay );
+                gl = glass.backIntersect( pixel.point, refRay );
                 nit = 0.95 / nwater;
                 gl.surfaceNormal *= -1;
                 discrim =  1 + ( nit * nit * (pow( -refRay * gl.surfaceNormal,2) - 1 ));
@@ -279,15 +312,15 @@ Point more_lightsource( Point pixel, Sphere glass, Sphere mirror ){
        
     Point interGlass = glass.intersect( pixel.point, (pixel.point - sourceR[0]._position));
     Point interMirror = mirror.intersect( pixel.point, (pixel.point - sourceR[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, sourceR );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceR, (pixel.point - sourceR[0]._position), glass );
 
     interGlass = glass.intersect( pixel.point, (pixel.point - sourceG[0]._position));
     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceG[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, sourceG );
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceG, (pixel.point - sourceG[0]._position), glass );
 
     interGlass = glass.intersect( pixel.point, (pixel.point - sourceB[0]._position));
     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceB[0]._position) );
-    pixel = light_intersect( pixel, interGlass, interMirror, sourceB);
+    pixel = light_intersect( pixel, interGlass, interMirror, sourceB, (pixel.point - sourceB[0]._position), glass);
 
     return pixel;
 }
@@ -295,15 +328,15 @@ Point more_lightsource( Point pixel, Sphere glass, Sphere mirror ){
 /*** 
 * Position and place everything into model space.
 ***/
-void model_space( Point3 origin, Point3 pixelPos ){
+Point model_space( Point3 origin, Point3 pixelPos ){
     Vector3 dir = pixelPos - origin;
 
    // Define world objects.
     Sphere glass( 260, 230, 80, 80 );
-    glass.setColors( .2, .2, .2);
+    glass.setColors( .3, .3, .3);
     glass.setLightExponent( 150 );
     glass.setReflectConstant( 0 );
-    glass.setTransmissionConstant( .85 );
+    glass.setTransmissionConstant( .85);
 
     Sphere mirror( 140, 230, 200, 80 ); // z=170, x = 160; 100, 200
     mirror.setColors( .7, .7, .7 );
@@ -321,8 +354,10 @@ void model_space( Point3 origin, Point3 pixelPos ){
     // Finds the nearest intersection (in pixel)
     Point pixel = intersection( glass, mirror, thisFloor, origin, dir, 1 );
     if( !pixel.active ) {
-        glColor3f( 0, 0, 1 );
-        return;
+        //glColor3f( 0, 0, 1 );
+        pixel.setColors( 0, 0, 1 );
+        pixel.setLightColors( 0, 0, 1 );
+        return pixel;
     }// End Floor
 
 
@@ -330,7 +365,7 @@ void model_space( Point3 origin, Point3 pixelPos ){
     // Uncomment for Multiple Lightsources.
     // pixel = more_lightsource( pixel, glass, mirror );
 
-    glColor3f( pixel.l_red, pixel.l_green, pixel.l_blue );
-
-    return;
+   // glColor3f( pixel.l_red, pixel.l_green, pixel.l_blue );
+    
+    return pixel;
 }

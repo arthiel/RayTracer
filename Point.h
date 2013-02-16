@@ -19,6 +19,9 @@ public:
     // Transmission Constant
     float kt;
 
+    // Overall Luminance for Pixel
+    float luminance;
+
     //Active?
     bool active;
 
@@ -33,6 +36,7 @@ public:
     void setLightExponent( float exp );
     void setReflectConstant( float a );
     void setTransmissionConstant( float a );
+    void setLuminance();
 
 };
 #endif
