@@ -16,7 +16,7 @@ const int WINDOW_WIDTH = 500;
 Point pixels[WINDOW_HEIGHT][WINDOW_WIDTH];
 
 float lume = 0;
-float l_max = 10;    // Luminance Max [0...1]
+float l_max = 1;    // Luminance Max [0...1]
 float ld_max = 100; // Device Max 100 nits.
 
 /** 
@@ -38,6 +38,7 @@ void ward_tone(){
     glBegin( GL_POINTS );
     for( int x = 0; x < WINDOW_HEIGHT; x++ ){
         for( int y = 0; y < WINDOW_WIDTH; y++ ){    
+            // Apply Device Model
             pixels[y][x].l_red = (pixels[y][x].l_red * m) / ld_max;
             pixels[y][x].l_green = (pixels[y][x].l_green * m) / ld_max ;
             pixels[y][x].l_blue = (pixels[y][x].l_blue * m) / ld_max;
@@ -52,11 +53,13 @@ void ward_tone(){
 
 /**
  * Reinhard Tone Reproduction 
+ ****** Doesn't work right, THey are not all similar, takes l_max into account.
  **/
 void reinhard_tone(){
-    float kv = 0.18; //pixels[100][250].luminance;
-
+    float kv = 0.18; //pixels[150][100].luminance; //Uncomment for pixel-key-value.
+    std::cout << kv << std::endl;
     float log_avg_lum = 0;
+    // Calculate Log Avg Luminance
     for( int x = 0; x < WINDOW_HEIGHT; x++ ){
         for( int y = 0; y < WINDOW_WIDTH; y++ ){
             log_avg_lum += log ( .001 + pixels[y][x].luminance );
@@ -71,11 +74,15 @@ void reinhard_tone(){
             pixels[y][x].l_red = ( kv * pixels[y][x].l_red ) / log_avg_lum;
             pixels[y][x].l_green = ( kv * pixels[y][x].l_green ) / log_avg_lum;
             pixels[y][x].l_blue = ( kv * pixels[y][x].l_blue ) / log_avg_lum;
+           /* pixels[y][x].l_red = ( kv / log_avg_lum ) * pixels[y][x].l_red;
+            pixels[y][x].l_green = ( kv / log_avg_lum ) * pixels[y][x].l_green;
+            pixels[y][x].l_blue = ( kv / log_avg_lum ) * pixels[y][x].l_blue;*/
+
            // Part B of Compression
             pixels[y][x].l_red = (pixels[y][x].l_red / (1 + pixels[y][x].l_red)) * ld_max;
             pixels[y][x].l_green = (pixels[y][x].l_green / (1 + pixels[y][x].l_green)) * ld_max;
             pixels[y][x].l_blue = (pixels[y][x].l_blue / (1 + pixels[y][x].l_blue)) * ld_max;
-            
+           
             // Apply Device Model
             pixels[y][x].l_red = pixels[y][x].l_red / ld_max;
             pixels[y][x].l_green = pixels[y][x].l_green / ld_max;
@@ -103,7 +110,7 @@ void display( void ){
         for( int x = 0; x < WINDOW_WIDTH; x++ ){
 
             pixels[y][x] = model_space( Point3( 250, 250, -550 ), Point3( x, y, 0 ) );
-            glColor3f( pixels[y][x].l_red, pixels[y][x].l_green, pixels[y][x].l_blue );
+            //glColor3f( pixels[y][x].l_red, pixels[y][x].l_green, pixels[y][x].l_blue );
 
             // Multiply each pixel by max luminance.
             pixels[y][x].l_red = l_max * pixels[y][x].l_red;
