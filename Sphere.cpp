@@ -113,10 +113,10 @@ Point Sphere::intersect( Point3 origin, Vector3 dir ){
 }
 
 /***
-* Calculates the intersection
+* Calculates the intersection behind the first intersection.
 * origin : point of origin for the eye
 * dir : direction the ray is facing
-* returns true if intersect, false if it does not.
+* returns the exitant point of the sphere.
 ***/
 Point Sphere::backIntersect( Point3 origin, Vector3 dir ){
     dir.normalize();	// Now A = 1.
@@ -127,16 +127,6 @@ Point Sphere::backIntersect( Point3 origin, Vector3 dir ){
     float w = (B * B)- 4 * C;
 
     // If the point intersects the sphere.
-  /*  if( w == 0 ){
-        w = -B/2;
-        // Store the point of intersection for later use.
-        pt_intersect = Point3( origin.x + dir.x * w, origin.y + dir.y * w, origin.z + dir.z * w );
-
-        // Return a point with the intersection, surface normal, material's red, green, and blue values, and light exponent.
-        return Point( pt_intersect, (pt_intersect - Point3( _x, _y, _z)), _red, _green, _blue, l_exponent, kr, kt);
-    }*/
-    // If the point intersects the sphere twice.
-  //  else if( w > 0 ){
         float w1 =  -(B + sqrt( w)) / 2;
         float w2 =  -(B - sqrt( w )) / 2;
 
@@ -150,15 +140,15 @@ Point Sphere::backIntersect( Point3 origin, Vector3 dir ){
 
         // Return a point with the intersection, surface normal, material's red, green, and blue values, and light exponent.
         return Point( pt_intersect, (pt_intersect - Point3( _x, _y, _z)), _red, _green, _blue, l_exponent, kr, kt);
-   // }
-    // There is no intersection, return an empty point.
-    return Point();
+
 }
 
+// Set the reflection constant
 void Sphere::setReflectConstant( float a ){
     kr = a;
 }
 
+// Set the transmission constant
 void Sphere::setTransmissionConstant( float a ){
     kt = a;
 }

@@ -1,5 +1,6 @@
 // model.cpp - The coordinates and model-space of the scene
-// 
+// Author: Emily Egeland
+// Computer Graphics II Winter 20122
 
 #include "stdafx.h"
 #include "model.h"
@@ -203,7 +204,6 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
     // Stopping reflection/refraction after a certain depth.
     if( depth < MAX_DEPTH ){
         if( pixel.kr > 0 ){
-
             // Calculate the reflection
             Vector3 refRay = dir - 2 * pixel.surfaceNormal * ( dir * pixel.surfaceNormal );
             refRay.normalize();
@@ -215,18 +215,18 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
             pixel.l_green += pixel.kr * inter.l_green;
             pixel.l_blue += pixel.kr * inter.l_blue;
 
+            // Uncomment to implement reflection within a cone area. (Checkpoint 5 Extra)
             //cone_reflection( glass, mirror, thisFloor, pixel, refRay, depth );
         }
         if( pixel.kt > 0 ){
-            //transmission stuff. Nothing for now.
-            //std::cout << "Hello" << std::endl;
+            //transmission stuff
             float nwater = 1;
             float nit = nwater /.95;
             float discrim =  1 + ( nit * nit * (pow( -dir * pixel.surfaceNormal,2) - 1 ));
             Vector3 refRay = dir;
             int count = 0;
             Point gl = pixel;
-            //while( discrim < 0 && count < 3 ){
+
             if( discrim <= 0 ){
                  refRay = dir - 2 * gl.surfaceNormal * ( dir * gl.surfaceNormal );
                  refRay.normalize();
@@ -245,7 +245,6 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
                 pixel.l_green += pixel.kt * gl.l_green;
                 pixel.l_blue += pixel.kt * gl.l_blue;
                  count++;
-               //  refRay.y *= -1;
             }
             else {
                 refRay = nit * refRay + ( nit * ( -refRay * gl.surfaceNormal ) - sqrt( discrim )) * gl.surfaceNormal;
@@ -275,7 +274,7 @@ Point intersection(Sphere glass, Sphere mirror, Floor thisFloor, Point3 origin, 
 
 
 /** 
- * Add more light sources. This was for Checkpoint 3.
+ * Add more light sources. This was for Checkpoint 3. (Extra)
  ***/
 Point more_lightsource( Point pixel, Sphere glass, Sphere mirror ){
 
@@ -292,15 +291,18 @@ Point more_lightsource( Point pixel, Sphere glass, Sphere mirror ){
     Light specB( .1, .1, 1, 1, Point3( 300, 750, 0 ));
     Light sourceB[] = { diffB, specB };
 
-       
+      
+    // Calculate light intersections for each light source. This is source Red
     Point interGlass = glass.intersect( pixel.point, (pixel.point - sourceR[0]._position));
     Point interMirror = mirror.intersect( pixel.point, (pixel.point - sourceR[0]._position) );
     pixel = light_intersect( pixel, interGlass, interMirror, sourceR, (pixel.point - sourceR[0]._position), glass );
 
+    // Source Green
     interGlass = glass.intersect( pixel.point, (pixel.point - sourceG[0]._position));
     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceG[0]._position) );
     pixel = light_intersect( pixel, interGlass, interMirror, sourceG, (pixel.point - sourceG[0]._position), glass );
 
+    // Source Blue
     interGlass = glass.intersect( pixel.point, (pixel.point - sourceB[0]._position));
     interMirror = mirror.intersect( pixel.point, (pixel.point - sourceB[0]._position) );
     pixel = light_intersect( pixel, interGlass, interMirror, sourceB, (pixel.point - sourceB[0]._position), glass);
@@ -348,6 +350,8 @@ Point model_space( Point3 origin, Point3 pixelPos ){
     // Uncomment for Multiple Lightsources.
     // pixel = more_lightsource( pixel, glass, mirror );
 
+    // This was moved to ray tracer file after checkpoint 6, trying
+    // to keep all the gl functions in one place.
    // glColor3f( pixel.l_red, pixel.l_green, pixel.l_blue );
     
     return pixel;

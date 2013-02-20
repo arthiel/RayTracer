@@ -1,5 +1,6 @@
 // model.h -- Header file for the model
-//
+// Author: Emily Egeland
+// Computer Graphics II - Winter 20122
 #ifndef MODEL_H
 #define MODEL_H
 

@@ -2,6 +2,8 @@
  * Light
  * An object for calculating Light information.
  * Also converts coordinates from previous set-up to current set-up.
+ * Author: Emily Egeland
+ * Computer Graphics II Winter 20122
  ***/
 #ifndef LIGHT_H
 #define LIGHT_H

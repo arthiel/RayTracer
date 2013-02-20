@@ -1,3 +1,9 @@
+/** 
+ * Individual Points
+ * Author: Emily Egeland
+ * Computer Graphics II - Winter 20122 
+ **/
+
 #ifndef POINT_H
 #define POINT_H
 

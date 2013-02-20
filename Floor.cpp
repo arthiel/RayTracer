@@ -7,12 +7,15 @@
 #include "Floor.h"
 
 
+// Default floor points.
 Floor::Floor(){
     front1 = Point3( 0, 0, 0 );
     front2 = Point3( 0, 0, 0 );
     back1 = Point3( 0, 0, 0 );
     back2 = Point3( 0, 0, 0 );
 }
+
+// Set the floor points.
 Floor::Floor( Point3 front1, Point3 front2, Point3 back1, Point3 back2 ){
     front1 = front1;
     front2 = front2;
@@ -20,16 +23,19 @@ Floor::Floor( Point3 front1, Point3 front2, Point3 back1, Point3 back2 ){
     back2 = back2;
 }
 
+// Set colors of the floor.
 void Floor::setColors( float r, float g, float b ){
     red = r;
     green = g;
     blue = b;
 }
 
+// Set light exponent
 void Floor::setLightExponent( float exp ){
     l_exponent = exp;
 }
 
+// Calculates the intersection point with the floor
 Point Floor::intersect( Point3 origin, Vector3 dir ){
     dir.normalize();
     Vector3 F ( 0, 80, origin.z );
@@ -47,11 +53,13 @@ Point Floor::intersect( Point3 origin, Vector3 dir ){
             return Point();
         else if( poi.z > -20 && poi.z < 2000 )
             return checker( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent, kr, kt), 50 );
-        
+            // Uncomment for a diagonal Pattern. (Extra, Checkpoint 4)
+            return diagonal( Point( poi, Vector3( 0, 1, 0 ), red, green, blue, l_exponent, kr, kt), 50 );
     }
     return Point();
 }
 
+// Creates a checker pattern on the floor.
 Point Floor::checker( Point pix, int size){
     // If odd row 
     if( int(pix.point.z)%(size*2) <= size ){
@@ -129,10 +137,12 @@ Point Floor::diagonal( Point pix, int size ){
     return pix;
 }
 
+// Sets the reflection constant for the whole floor
 void Floor::setReflectConstant( float a ){
     kr = a;
 }
 
+// Sets the Transmission constant for the whole floor
 void Floor::setTransmissionConstant( float a ){
     kt = a;
 }

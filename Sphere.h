@@ -2,6 +2,8 @@
  * Sphere
  * An object for calculating sphere information and intersection
  * Also converts coordinates from previous set-up to current set-up.
+ * Author: Emily Egeland
+ * Computer Graphics II Winter 20122
  ***/
 #ifndef SPHERE_H
 #define SPHERE_H

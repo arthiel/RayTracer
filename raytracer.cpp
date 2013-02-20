@@ -1,5 +1,6 @@
 // raytracer.cpp : The entry for the ray tracer
-//
+// Author: Emily Egeland
+// Computer Graphics II Winter 20122
 
 #include "stdafx.h"
 #include <cstdlib>
@@ -74,6 +75,7 @@ void reinhard_tone(){
             pixels[y][x].l_red = ( kv * pixels[y][x].l_red ) / log_avg_lum;
             pixels[y][x].l_green = ( kv * pixels[y][x].l_green ) / log_avg_lum;
             pixels[y][x].l_blue = ( kv * pixels[y][x].l_blue ) / log_avg_lum;
+            // Attempted another implementation.
            /* pixels[y][x].l_red = ( kv / log_avg_lum ) * pixels[y][x].l_red;
             pixels[y][x].l_green = ( kv / log_avg_lum ) * pixels[y][x].l_green;
             pixels[y][x].l_blue = ( kv / log_avg_lum ) * pixels[y][x].l_blue;*/
